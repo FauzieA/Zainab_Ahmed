@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Hex codes extracted from your Wix computed style parameters */
+  --color-earth-main: #bfa791;
+  --color-earth-bg: #efe9e4;
+  
+  /* Strict family overrides */
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Inter", "Helvetica Neue", sans-serif;
+}
+
+/* Explicit fallback handling to ensure browser rendering honors the look */
+h1, h2, h3, h4, .font-serif {
+  font-family: var(--font-serif) !important;
+}
