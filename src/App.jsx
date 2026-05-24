@@ -56,8 +56,7 @@ function MasterLayoutSwitcher() {
 
 function App() {
   return (
-    // Your basename preserves your specific project subfolder navigation path keys flawlessly
-    <BrowserRouter basename="/Zainab_Ahmed/">
+    <BrowserRouter>
       <MasterLayoutSwitcher />
     </BrowserRouter>
   );
