@@ -7,5 +7,6 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: '/Zainab_Ahmed/', 
+  // Use root path for Vercel production deployments, or fallback if needed
+  base: process.env.VERCEL ? '/' : '/', 
 })
