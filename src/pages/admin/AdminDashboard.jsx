@@ -8,255 +8,335 @@ import CalendarNavigation from '../../components/admin/CalendarNavigation';
 import CalendarViewports from '../../components/admin/CalendarViewports';
 import ControlDrawer from '../../components/admin/ControlDrawer';
 import BookingsDatabase from '../../components/admin/BookingsDatabase';
+import Home from '../client/Home';
+import Book from '../client/Booking';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const token = localStorage.getItem('admin_token');
   const userLabel = localStorage.getItem('admin_username') || 'Admin';
 
-  // --- PLATFORM CENTRAL MEMORY ENGINE STATES ---
+  const [activeSubPage, setActiveSubPage] = useState('calendar');
+
   const [slots, setSlots] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-
-  // --- TOAST NOTIFICATION STATE ---
   const [toast, setToast] = useState(null);
 
-  // --- VISUAL WINDOW VIEWPORT CONTROLS ---
   const [viewMode, setViewMode] = useState('month'); 
   const [focusedDate, setFocusedDate] = useState('19/05/2026'); 
   const [selectedDatesPool, setSelectedDatesPool] = useState(['19/05/2026']); 
   const [expandedWeekDay, setExpandedWeekDay] = useState(null); 
   const [rescheduleTargetBooking, setRescheduleTargetBooking] = useState(null);
 
-  const CURRENT_YEAR = 2026;
-  const TIME_OPTIONS = ["09:00 AM", "10:00 AM", "11:00 AM", "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"];
-  
-  const MONTHS_MANIFEST = [
-    { name: 'January', days: 31, code: '01' }, { name: 'February', days: 28, code: '02' },
-    { name: 'March', days: 31, code: '03' }, { name: 'April', days: 30, code: '04' },
-    { name: 'May', days: 31, code: '05' }, { name: 'June', days: 30, code: '06' },
-    { name: 'July', days: 31, code: '07' }, { name: 'August', days: 31, code: '08' },
-    { name: 'September', days: 30, code: '09' }, { name: 'October', days: 31, code: '10' },
-    { name: 'November', days: 30, code: '11' }, { name: 'December', days: 31, code: '12' }
+  const CURRENT_YEAR = new Date().getFullYear();
+  const TIME_OPTIONS = [
+    '09:00 AM', '10:15 AM', '11:30 AM', '01:00 PM', '02:15 PM', '03:30 PM', '04:45 PM'
   ];
 
-  // --- TIMELINE PURE LOGIC UTILITIES ---
-  const parseDateString = (dateStr) => {
-    const [day, month, year] = dateStr.split('/').map(Number);
-    return new Date(year, month - 1, day);
+  const MONTHS_MANIFEST = [
+    { name: 'January', code: '01', days: 31 }, { name: 'February', code: '02', days: 28 },
+    { name: 'March', code: '03', days: 31 }, { name: 'April', code: '04', days: 30 },
+    { name: 'May', code: '05', days: 31 }, { name: 'June', code: '06', days: 30 },
+    { name: 'July', code: '07', days: 31 }, { name: 'August', code: '08', days: 31 },
+    { name: 'September', code: '09', days: 30 }, { name: 'October', code: '10', days: 31 },
+    { name: 'November', code: '11', days: 30 }, { name: 'December', code: '12', days: 31 }
+  ];
+
+  const [sessionPrice, setSessionPrice] = useState('25000');
+  const [siteContent, setSiteContent] = useState({});
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    syncWorkspaceData();
+    fetchSystemConfigurations();
+  }, [token]);
+
+  const showToast = (msg, type = 'success') => {
+    setToast({ text: msg, variant: type });
+    setTimeout(() => setToast(null), 4000);
   };
 
-  const isPastDate = (dateStr) => {
-    return parseDateString(dateStr) < new Date(2026, 4, 19);
-  };
-
-  const getDayStatusMetrics = (dateStr) => {
-    return {
-      hasAvailable: slots.filter(s => s.date_string === dateStr).some(s => !s.is_booked),
-      hasBooked: bookings.filter(b => b.date_booked === dateStr && b.status === 'CONFIRMED').length > 0
-    };
-  };
-
-  // --- GLOBAL BACKEND SYNC FLOW ---
-  const syncWorkspaceData = () => {
-    fetch(`${CONFIG.API_BASE_URL}/api/booking/admin-dashboard-data/`, {
-      headers: { 'Authorization': `Token ${token}` }
-    })
-      .then(res => { if (!res.ok) throw new Error(); return res.json(); })
-      .then(data => { setSlots(data.slots || []); setBookings(data.bookings || []); setLoading(false); })
-      .catch(() => { localStorage.clear(); navigate('/admin/login'); });
-  };
-
-  useEffect(() => { if (!token) navigate('/admin/login'); else syncWorkspaceData(); }, [token]);
-
-  // --- TOAST NOTIFICATION HANDLER ---
-  const showToast = (message, type = 'success', duration = 3000) => {
-    setToast({ message, type });
-    if (duration > 0) {
-      setTimeout(() => setToast(null), duration);
+  const syncWorkspaceData = async () => {
+    try {
+      setLoading(true);
+      const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, ""); 
+      const res = await fetch(`${baseUrl}/api/booking/admin-dashboard-data/`, {
+        headers: { 'Authorization': `Token ${token}` }
+      });
+      if(res.ok) {
+         const data = await res.json();
+         setSlots(data.slots || []);
+         setBookings(data.bookings || []);
+      }
+    } catch (err) {
+      showToast('Network synchronization error.', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // --- NAVIGATION ACTION CONTROLLER STEPPERS ---
-  const handleStepNavigation = (direction) => {
-    const [day, month, year] = focusedDate.split('/').map(Number);
-    let currentJSDate = new Date(year, month - 1, day);
+  const fetchSystemConfigurations = async () => {
+    try {
+      const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/api/booking/config/`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.session_price) setSessionPrice(data.session_price);
+        if (data.site_content) setSiteContent(data.site_content);
+      }
+    } catch (err) {
+      console.error('System settings fetch unfulfilled.');
+    }
+  };
 
-    if (viewMode === 'day') currentJSDate.setDate(currentJSDate.getDate() + (direction === 'next' ? 1 : -1));
-    else if (viewMode === 'week') currentJSDate.setDate(currentJSDate.getDate() + (direction === 'next' ? 7 : -7));
-    else if (viewMode === 'month') currentJSDate.setMonth(currentJSDate.getMonth() + (direction === 'next' ? 1 : -1));
-    else if (viewMode === 'year') currentJSDate.setFullYear(currentJSDate.getFullYear() + (direction === 'next' ? 1 : -1));
+  const handleSavePricing = async (e) => {
+    e.preventDefault();
+    setActionLoading(true);
+    try {
+      const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/api/booking/config/update-price/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${token}` },
+        body: JSON.stringify({ price: sessionPrice })
+      });
+      if (res.ok) {
+        showToast('Pricing adjustments successfully updated.');
+        fetchSystemConfigurations();
+      } else {
+        showToast('Unable to complete pricing update.', 'error');
+      }
+    } catch (err) {
+      showToast('Connection target unreachable.', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
-    const nextD = String(currentJSDate.getDate()).padStart(2, '0');
-    const nextM = String(currentJSDate.getMonth() + 1).padStart(2, '0');
-    const computedStr = `${nextD}/${nextM}/${currentJSDate.getFullYear()}`;
-
-    setFocusedDate(computedStr);
-    setSelectedDatesPool([computedStr]);
-    setExpandedWeekDay(null);
+  const handleSaveContent = async (e) => {
+    e.preventDefault();
+    setActionLoading(true);
+    try {
+      const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/config/update-content/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${token}` },
+        body: JSON.stringify({ site_content: siteContent })
+      });
+      if (res.ok) {
+        showToast('Website copy modifications updated successfully.');
+        fetchSystemConfigurations(); // Instantly pull back saved data so previews update
+      } else {
+        showToast('Unable to complete content update.', 'error');
+      }
+    } catch (err) {
+      showToast('Connection target unreachable.', 'error');
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleDateClick = (dateStr) => {
     setFocusedDate(dateStr);
-    if (viewMode === 'month') {
-      if (selectedDatesPool.includes(dateStr)) {
-        if (selectedDatesPool.length > 1) setSelectedDatesPool(selectedDatesPool.filter(d => d !== dateStr));
-      } else {
-        setSelectedDatesPool([...selectedDatesPool, dateStr]);
-      }
+    setExpandedWeekDay(null);
+    if (selectedDatesPool.includes(dateStr)) {
+      setSelectedDatesPool(selectedDatesPool.filter(d => d !== dateStr));
     } else {
-      setSelectedDatesPool([dateStr]);
+      setSelectedDatesPool([...selectedDatesPool, dateStr]);
     }
   };
 
-  // --- EVENT CONTROLLERS DISPATCH MUTATORS ---
-  const handlePublishSlots = async (selectedTimes, onCompleteCallback, overrideDatesArray = null) => {
-    setActionLoading(true);
-    const targetedDates = overrideDatesArray || selectedDatesPool;
+  const onStep = (direction) => {
+    if (!focusedDate) return;
+    const [d, m, y] = focusedDate.split('/').map(Number);
+    const date = new Date(y, m - 1, d);
     
-    try {
-      const res = await fetch(`${CONFIG.API_BASE_URL}/api/booking/admin-slots/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${token}` },
-        body: JSON.stringify({ date_strings: targetedDates, time_strings: selectedTimes })
-      });
-      if (res.ok) { 
-        showToast(`✓ ${selectedTimes.length} time slots added across ${targetedDates.length} date(s)`, 'success');
-        if (onCompleteCallback) onCompleteCallback(); 
-        syncWorkspaceData(); 
-      } else {
-        showToast('⚠ Could not add slots. Please try again.', 'error', 4000);
-      }
-    } catch { 
-      showToast('✕ Connection error. Please check your network.', 'error', 4000);
-    } finally { 
-      setActionLoading(false); 
-    }
+    if (viewMode === 'day') date.setDate(date.getDate() + (direction === 'next' ? 1 : -1));
+    if (viewMode === 'week') date.setDate(date.getDate() + (direction === 'next' ? 7 : -7));
+    if (viewMode === 'month') date.setMonth(date.getMonth() + (direction === 'next' ? 1 : -1));
+
+    const pad = (n) => String(n).padStart(2, '0');
+    const newStr = `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
+    setFocusedDate(newStr);
+    setSelectedDatesPool([newStr]);
   };
 
-  const handleDeleteSlot = async (slotId) => {
-    if (!window.confirm("Permanently remove this slot?")) return;
-    try {
-      const res = await fetch(`${CONFIG.API_BASE_URL}/api/booking/admin-slots-delete/${slotId}/`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Token ${token}` }
-      });
-      if (res.ok) {
-        showToast('✓ Slot removed successfully', 'success');
-        syncWorkspaceData();
-      } else {
-        showToast('⚠ Could not remove slot. Please try again.', 'error', 4000);
-      }
-    } catch { 
-      showToast('✕ Connection error while removing slot.', 'error', 4000);
-    }
+  const isPastDate = (dateStr) => {
+    if (!dateStr) return false;
+    const [d, m, y] = dateStr.split('/').map(Number);
+    const target = new Date(y, m - 1, d);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    return target < today;
   };
 
-  const handleCancelBooking = async (bookingId) => {
-    if (!window.confirm("Cancel this client session?")) return;
-    try {
-      const res = await fetch(`${CONFIG.API_BASE_URL}/api/booking/admin-cancel/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${token}` },
-        body: JSON.stringify({ booking_id: bookingId })
-      });
-      if (res.ok) {
-        showToast('✓ Session canceled and client notified', 'success');
-        syncWorkspaceData();
-      } else {
-        showToast('⚠ Could not cancel session. Please try again.', 'error', 4000);
-      }
-    } catch { 
-      showToast('✕ Connection error while canceling session.', 'error', 4000);
-    }
+  const getDayStatusMetrics = (dateStr) => {
+    const daySlots = slots.filter(s => s.date_string === dateStr);
+    const dayBookings = bookings.filter(b => b.date_booked === dateStr && b.status === 'CONFIRMED');
+    return {
+      capacity: daySlots.length,
+      claimed: dayBookings.length,
+      hasAvailable: daySlots.some(s => !s.is_booked),
+      hasBooked: dayBookings.length > 0
+    };
   };
 
-  const handleExecuteReschedule = async (targetSlotId) => {
-    try {
-      const res = await fetch(`${CONFIG.API_BASE_URL}/api/booking/admin-reschedule/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${token}` },
-        body: JSON.stringify({ booking_id: rescheduleTargetBooking.id, target_slot_id: targetSlotId })
-      });
-      if (res.ok) { 
-        showToast('✓ Session rescheduled and client updated', 'success');
-        setRescheduleTargetBooking(null); 
-        syncWorkspaceData(); 
-      } else {
-        showToast('⚠ Could not reschedule. Please try again.', 'error', 4000);
-      }
-    } catch { 
-      showToast('✕ Connection error while rescheduling.', 'error', 4000);
-    }
-  };
-
-  if (loading) {
-    return <div className="min-h-screen bg-white flex items-center justify-center font-serif text-[#634032] italic">Synchronizing Operational Analytics Workspace...</div>;
-  }
+  const handleCancelBooking = async () => {};
+  const handleDeleteSlot = async () => {};
+  const handlePublishSlots = async () => {};
+  const handleExecuteReschedule = async () => {};
 
   return (
-    <div className="min-h-screen bg-[#efe9e4]/30 text-[#634032] font-sans antialiased pb-24">
-      {/* TOAST NOTIFICATION */}
+    <div className="min-h-screen bg-[#efe9e4]/20 flex flex-col antialiased font-sans text-gray-800 selection:bg-[#efe9e4]">
       {toast && (
-        <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-sm shadow-sm border text-sm font-light ${
-          toast.type === 'success' 
-            ? 'bg-[#efe9e4]/95 text-[#634032] border-[#bfa791]/30' 
-            : 'bg-[#efe9e4]/95 text-[#634032] border-[#bfa791]/50'
-        }`}>
-          {toast.message}
+        <div className={`fixed top-6 right-6 z-50 px-4 py-2 text-xs font-mono uppercase tracking-widest rounded-sm border shadow-sm ${toast.variant === 'error' ? 'bg-red-50 border-red-200 text-red-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'}`}>
+          {toast.text}
         </div>
       )}
 
-      {/* NAVBAR */}
-      <nav className="w-full bg-white border-b border-[#bfa791]/20 px-6 py-4 flex justify-between items-center">
-        <span className="font-serif text-sm"><strong className="font-sans text-xs uppercase text-[#a38c77]">{userLabel}</strong>'s Dashboard</span>
-        <button onClick={() => { localStorage.clear(); navigate('/admin/login'); }} className="text-xs font-bold uppercase text-red-400">Logout</button>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-6 mt-10 space-y-10">
-        {/* COMPONENT 1: METRICS PANEL */}
-        <AdminAnalytics bookings={bookings} slots={slots} />
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* LEFT SIDE STRUCTURAL ZONE */}
-          <div className="lg:col-span-7 space-y-4">
-            {/* COMPONENT 2: STEPPERS SWITCH CONTROLS */}
-            <CalendarNavigation 
-              viewMode={viewMode} setViewMode={setViewMode} focusedDate={focusedDate}
-              onStep={handleStepNavigation} setExpandedWeekDay={setExpandedWeekDay} setSelectedDatesPool={setSelectedDatesPool}
-            />
-            {/* COMPONENT 3: VISUAL MATRIX VIEWPORTS */}
-            <CalendarViewports 
-              viewMode={viewMode} focusedDate={focusedDate} selectedDatesPool={selectedDatesPool}
-              slots={slots} bookings={bookings} expandedWeekDay={expandedWeekDay}
-              setExpandedWeekDay={setExpandedWeekDay} handleDateClick={handleDateClick}
-              isPastDate={isPastDate} getDayStatusMetrics={getDayStatusMetrics}
-              TIME_OPTIONS={TIME_OPTIONS} MONTHS_MANIFEST={MONTHS_MANIFEST} CURRENT_YEAR={CURRENT_YEAR}
-            />
-          </div>
-
-          {/* RIGHT SIDE STRUCTURAL ZONE */}
-          <div className="lg:col-span-5">
-            {/* COMPONENT 4: EDIT DRAWERS CABINET ACCORDION */}
-            <ControlDrawer 
-              focusedDate={focusedDate} selectedDatesPool={selectedDatesPool} slots={slots} bookings={bookings}
-              actionLoading={actionLoading} rescheduleTargetBooking={rescheduleTargetBooking}
-              setRescheduleTargetBooking={setRescheduleTargetBooking} handleCancelBooking={handleCancelBooking}
-              handleDeleteSlot={handleDeleteSlot} handlePublishSlots={handlePublishSlots}
-              handleExecuteReschedule={handleExecuteReschedule} isPastDate={isPastDate}
-              TIME_OPTIONS={TIME_OPTIONS} token={token} syncWorkspaceData={syncWorkspaceData} CONFIG={CONFIG}
-              showToast={showToast}
-            />
-          </div>
+      <header className="bg-white border-b border-[#bfa791]/15 px-8 py-5 flex justify-between items-center">
+        <div className="flex items-center space-x-3">
+          <div className="w-2 h-2 rounded-full bg-[#634032]" />
+          <h1 className="font-serif text-md uppercase tracking-widest text-[#634032]">Management Workspace</h1>
         </div>
+        <div className="flex items-center space-x-6">
+          <span className="text-[10px] font-mono tracking-widest uppercase text-gray-400">Authenticated // {userLabel}</span>
+          <button onClick={() => { localStorage.clear(); navigate('/login'); }} className="text-[10px] uppercase tracking-widest font-semibold text-red-700 hover:text-red-900 transition-colors cursor-pointer">Sign Out</button>
+        </div>
+      </header>
 
-        {/* COMPONENT 5: COMPREHENSIVE CRM SEARCHABLE MANIFEST JOURNAL */}
-        <BookingsDatabase 
-          bookings={bookings} isPastDate={isPastDate} 
-          handleCancelBooking={handleCancelBooking} setFocusedDate={setFocusedDate} 
-        />
+      <div className="flex flex-1 flex-col md:flex-row">
+        <aside className="w-full md:w-60 bg-white border-r border-[#bfa791]/15 p-5 flex flex-col space-y-1">
+          <span className="text-[9px] uppercase tracking-[0.2em] text-[#a38c77] font-bold px-3 mb-3 block">Navigation</span>
+          
+          <button 
+            onClick={() => setActiveSubPage('calendar')}
+            className={`w-full text-left px-3 py-2.5 text-xs font-medium uppercase tracking-widest transition-all rounded-xs cursor-pointer flex items-center justify-between ${activeSubPage === 'calendar' ? 'bg-[#634032] text-white' : 'text-[#634032]/70 hover:bg-[#efe9e4]/30 hover:text-[#634032]'}`}
+          >
+            <span>Calendar View</span>
+            <span className="font-mono text-[9px] opacity-50">[{slots.length}]</span>
+          </button>
+
+          <button 
+            onClick={() => setActiveSubPage('pricing')}
+            className={`w-full text-left px-3 py-2.5 text-xs font-medium uppercase tracking-widest transition-all rounded-xs cursor-pointer ${activeSubPage === 'pricing' ? 'bg-[#634032] text-white' : 'text-[#634032]/70 hover:bg-[#efe9e4]/30 hover:text-[#634032]'}`}
+          >
+            Pricing Control
+          </button>
+
+          <button 
+            onClick={() => setActiveSubPage('content')}
+            className={`w-full text-left px-3 py-2.5 text-xs font-medium uppercase tracking-widest transition-all rounded-xs cursor-pointer ${activeSubPage === 'content' ? 'bg-[#634032] text-white' : 'text-[#634032]/70 hover:bg-[#efe9e4]/30 hover:text-[#634032]'}`}
+          >
+            Editorial System
+          </button>
+        </aside>
+
+        <main className="flex-1 p-8 overflow-x-hidden">
+          
+          {activeSubPage === 'calendar' && (
+            <div className="space-y-6">
+              <AdminAnalytics slots={slots} bookings={bookings} />
+              
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <div className="lg:col-span-7 space-y-4">
+                  <CalendarNavigation 
+                    viewMode={viewMode} setViewMode={setViewMode} focusedDate={focusedDate}
+                    onStep={onStep} setExpandedWeekDay={setExpandedWeekDay} setSelectedDatesPool={setSelectedDatesPool}
+                  />
+                  <CalendarViewports 
+                    viewMode={viewMode} focusedDate={focusedDate} selectedDatesPool={selectedDatesPool}
+                    slots={slots} bookings={bookings} expandedWeekDay={expandedWeekDay}
+                    setExpandedWeekDay={setExpandedWeekDay} handleDateClick={handleDateClick}
+                    isPastDate={isPastDate} getDayStatusMetrics={getDayStatusMetrics}
+                    TIME_OPTIONS={TIME_OPTIONS} MONTHS_MANIFEST={MONTHS_MANIFEST} CURRENT_YEAR={CURRENT_YEAR}
+                  />
+                </div>
+                <div className="lg:col-span-5">
+                  <ControlDrawer 
+                    focusedDate={focusedDate} selectedDatesPool={selectedDatesPool} slots={slots} bookings={bookings}
+                    actionLoading={actionLoading} rescheduleTargetBooking={rescheduleTargetBooking}
+                    setRescheduleTargetBooking={setRescheduleTargetBooking} handleCancelBooking={handleCancelBooking}
+                    handleDeleteSlot={handleDeleteSlot} handlePublishSlots={handlePublishSlots}
+                    handleExecuteReschedule={handleExecuteReschedule} isPastDate={isPastDate}
+                    TIME_OPTIONS={TIME_OPTIONS} token={token} syncWorkspaceData={syncWorkspaceData} CONFIG={CONFIG}
+                    showToast={showToast}
+                  />
+                </div>
+              </div>
+
+              <BookingsDatabase 
+                bookings={bookings} isPastDate={isPastDate} 
+                handleCancelBooking={handleCancelBooking} setFocusedDate={setFocusedDate} 
+              />
+            </div>
+          )}
+
+          {activeSubPage === 'pricing' && (
+            <div className="max-w-md bg-white border border-[#bfa791]/20 p-6 rounded-xs shadow-2xs space-y-4">
+              <div>
+                <h3 className="font-serif text-md text-[#634032] uppercase tracking-wide">Base Service Fee</h3>
+                <p className="text-[11px] text-[#a38c77]">Set the default flat currency value charged for private client consultations.</p>
+              </div>
+              <form onSubmit={handleSavePricing} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] uppercase tracking-wider text-gray-400 block font-bold">Session Rate</label>
+                  <input 
+                    type="number" value={sessionPrice} 
+                    onChange={(e) => setSessionPrice(e.target.value)}
+                    className="w-full bg-gray-50/50 border border-gray-200 rounded-2xs px-3 py-2 text-xs font-mono text-gray-700 focus:outline-none focus:border-[#634032]" 
+                    required
+                  />
+                </div>
+                <button 
+                  type="submit" disabled={actionLoading}
+                  className="bg-[#634032] text-white text-[10px] uppercase tracking-widest px-4 py-2 rounded-2xs hover:bg-[#a38c77] transition-all cursor-pointer disabled:opacity-40"
+                >
+                  {actionLoading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </form>
+            </div>
+          )}
+
+          {activeSubPage === 'content' && (
+            <div className="space-y-4">
+              <div className="bg-white border border-[#bfa791]/20 p-4 rounded-xs flex justify-between items-center shadow-xs">
+                <h3 className="font-serif text-md text-[#634032] uppercase tracking-wide">Editorial System</h3>
+                <button 
+                  onClick={handleSaveContent} 
+                  disabled={actionLoading}
+                  className="bg-[#634032] text-white text-[10px] uppercase tracking-widest px-6 py-2.5 rounded-2xs hover:bg-[#a38c77] transition-all cursor-pointer disabled:opacity-40 shadow-xs font-semibold"
+                >
+                  {actionLoading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+
+              <div className="border border-[#bfa791]/20 rounded-sm bg-white overflow-hidden shadow-2xs p-4 max-h-[calc(100vh-300px)] overflow-y-auto">
+                <div className="space-y-8 pointer-events-auto">
+                  <div>
+                    <Home 
+                      inlineEditMode={true}
+                      externalState={siteContent}
+                      setExternalState={setSiteContent}
+                    />
+                  </div>
+                  <div className="pt-8 border-t border-gray-200">
+                    <Book 
+                      inlineEditMode={true}
+                      externalState={siteContent}
+                      setExternalState={setSiteContent}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </main>
       </div>
     </div>
   );

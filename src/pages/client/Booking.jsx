@@ -3,7 +3,7 @@ import { CONFIG } from '../../config';
 import ConsultationDetails from '../../components/client/ConsultationDetails';
 import IntakeFormModal from '../../components/client/IntakeFormModal';
 
-export default function Book() {
+export default function Book({ inlineEditMode = false, externalState = null, setExternalState = null }) {
   const [serviceDetails, setServiceDetails] = useState({
     title: "1:1 Parenting Consultation",
     type: "Private Advisory Session",
@@ -20,6 +20,7 @@ export default function Book() {
   const [selectedDate, setSelectedDate] = useState(19); 
   const [selectedTime, setSelectedTime] = useState('');
   const [loading, setLoading] = useState(true);
+  const [liveContent, setLiveContent] = useState(null);
   
   const [isIntakeOpen, setIsIntakeOpen] = useState(false);
 
@@ -42,21 +43,50 @@ export default function Book() {
   };
 
   useEffect(() => {
-    fetch(`${CONFIG.API_BASE_URL}/api/booking/meta/`)
+    fetch(`${CONFIG.API_BASE_URL.replace(/\/$/, "")}/api/booking/meta/`)
       .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
       .then((data) => {
-        if (data.service) setServiceDetails(data.service);
-        if (data.available_slots) {
-          setAllAvailableSlots(data.available_slots);
+        if (data.site_content) {
+          setLiveContent(data.site_content);
+          if (!inlineEditMode) {
+            setServiceDetails(prev => ({
+              ...prev,
+              type: data.site_content.serviceType || prev.type,
+              title: data.site_content.consultTitle || data.site_content.serviceTitle || prev.title,
+              duration: data.site_content.consultDuration || prev.duration,
+              location: data.site_content.consultLocation || prev.location
+            }));
+          }
+        }
+        
+        if (data.pricing) {
+          setServiceDetails(prev => ({
+            ...prev,
+            price: data.pricing.amount,
+            currency: data.pricing.currency
+          }));
+        }
+        
+        // Ensure incoming flat array is grouped by date strings for the frontend rendering map
+        if (data.slots && Array.isArray(data.slots)) {
+          const groupedSlots = {};
+          data.slots.forEach(slot => {
+            if (!groupedSlots[slot.date_string]) {
+              groupedSlots[slot.date_string] = [];
+            }
+            groupedSlots[slot.date_string].push(slot.time_string);
+          });
+          
+          setAllAvailableSlots(groupedSlots);
           const initialKey = getFullDateKey(selectedDate);
-          const initialTimes = data.available_slots[initialKey] || [];
+          const initialTimes = groupedSlots[initialKey] || [];
           setAvailableTimeSlots(initialTimes);
           if (initialTimes.length > 0) setSelectedTime(initialTimes[0]);
         }
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, []);
+  }, [inlineEditMode]);
 
   useEffect(() => {
     const targetKey = getFullDateKey(selectedDate);
@@ -69,7 +99,7 @@ export default function Book() {
     setIsIntakeOpen(false);
     
     try {
-      const intentResponse = await fetch(`${CONFIG.API_BASE_URL}/api/booking/intent/`, {
+      const intentResponse = await fetch(`${CONFIG.API_BASE_URL.replace(/\/$/, "")}/api/booking/intent/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -117,17 +147,20 @@ export default function Book() {
     <div className="min-h-screen bg-white text-[#634032] antialiased pb-24 selection:bg-[#efe9e4]">
       <section className="max-w-6xl mx-auto px-6 pt-16 grid grid-cols-1 md:grid-cols-12 gap-12">
         
-        {/* LEFT COLUMN: Editorial Profile & Framework Specifications */}
         <div className="md:col-span-6 lg:col-span-7">
-          <ConsultationDetails serviceDetails={serviceDetails} />
+          <ConsultationDetails 
+            serviceDetails={serviceDetails}
+            inlineEditMode={inlineEditMode}
+            externalState={externalState}
+            setExternalState={setExternalState}
+            liveContent={liveContent}
+          />
         </div>
 
-        {/* RIGHT COLUMN: Studio Booking Calendar Interface */}
         <div className="md:col-span-6 lg:col-span-5 bg-[#efe9e4]/20 p-6 md:p-8 rounded-sm border border-[#bfa791]/20 h-fit space-y-6">
           <div className="space-y-4">
             <h3 className="font-serif text-lg tracking-wide text-[#634032] font-normal">Select Date & Time</h3>
             
-            {/* LUXURY INVESTMENT CARD BLOCK */}
             <div className="bg-white border border-[#bfa791]/30 p-4 rounded-xs flex justify-between items-center shadow-2xs">
               <div className="space-y-0.5">
                 <span className="text-[10px] uppercase tracking-wider text-[#a38c77] font-bold block">Session Rate</span>
@@ -141,16 +174,12 @@ export default function Book() {
             </div>
           </div>
           
-          {/* Calendar Month Navigation Header */}
           <div className="flex justify-between items-center text-xs tracking-wider text-[#a38c77] uppercase font-bold pt-2">
             <button onClick={() => handleMonthChange('prev')} className="text-base cursor-pointer hover:text-[#634032]">‹</button>
             <span>{['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][currentMonth - 1]} {currentYear}</span>
             <button onClick={() => handleMonthChange('next')} className="text-base cursor-pointer hover:text-[#634032]">›</button>
           </div>
 
-          {/* ... Rest of your Grid Layout Map, Time Picker, and Form Modal remains exactly the same */}
-
-          {/* Grid Layout Map */}
           <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-medium text-[#a38c77]">
             {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => <div key={idx} className="py-1 opacity-60">{day}</div>)}
             {daysInMonth.map((day) => {
@@ -170,7 +199,6 @@ export default function Book() {
             })}
           </div>
 
-          {/* Time Picker Block */}
           <div className="border-t border-[#bfa791]/15 pt-4 space-y-3">
             <span className="text-[10px] uppercase font-bold tracking-wider text-[#a38c77] block">Available Slots</span>
             {availableTimeSlots.length > 0 ? (
@@ -191,7 +219,6 @@ export default function Book() {
             )}
           </div>
 
-          {/* Core Master Action Dispatch Trigger */}
           <button
             onClick={() => setIsIntakeOpen(true)}
             disabled={!selectedTime}
@@ -202,7 +229,6 @@ export default function Book() {
         </div>
       </section>
 
-      {/* RENDER DYNAMIC QUESTIONNAIRE OVERLAY FRAMEWORK */}
       <IntakeFormModal
         isOpen={isIntakeOpen}
         onClose={() => setIsIntakeOpen(false)}
@@ -210,6 +236,10 @@ export default function Book() {
         selectedTime={selectedTime}
         serviceDetails={serviceDetails}
         onSubmitIntent={handleFormSubmissionAndCheckout}
+        inlineEditMode={inlineEditMode}
+        externalState={externalState}
+        setExternalState={setExternalState}
+        liveContent={liveContent}
       />
     </div>
   );

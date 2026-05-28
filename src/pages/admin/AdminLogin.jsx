@@ -16,7 +16,7 @@ export default function AdminLogin() {
 
     try {
       // In a later step, we will hook this up to Django's built-in token auth endpoint
-      const response = await fetch(`${CONFIG.API_BASE_URL}/api/booking/admin-token/`, {
+      const response = await fetch(`${CONFIG.API_BASE_URL}/admin-token/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),

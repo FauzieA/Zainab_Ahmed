@@ -1,11 +1,40 @@
 import React, { useState } from 'react';
 
-export default function IntakeFormModal({ isOpen, onClose, selectedDateStr, selectedTime, serviceDetails, onSubmitIntent }) {
+export default function IntakeFormModal({ 
+  isOpen, 
+  onClose, 
+  selectedDateStr, 
+  selectedTime, 
+  serviceDetails, 
+  onSubmitIntent,
+  inlineEditMode = false,
+  externalState = null,
+  setExternalState = null,
+  liveContent = null 
+}) {
+
   const [formData, setFormData] = useState({
     parentName: '', parentEmail: '', parentPhone: '',
     childAge: '', childGender: '', childSchoolStatus: '',
     challenges: '', duration: '', triedSoFar: '', outcomesDesired: ''
   });
+
+  // STRICT 3-TIER RESOLUTION CHAIN
+  const getFormValue = (key, defaultValue) => {
+    if (inlineEditMode && externalState && externalState[key] !== undefined) {
+      return externalState[key];
+    }
+    if (!inlineEditMode && liveContent && liveContent[key] !== undefined) {
+      return liveContent[key];
+    }
+    return defaultValue;
+  };
+  
+  const handleEditableBlur = (key, newContent) => {
+    if (setExternalState && externalState) {
+      setExternalState({ ...externalState, [key]: newContent });
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -21,23 +50,27 @@ export default function IntakeFormModal({ isOpen, onClose, selectedDateStr, sele
         {/* Modal Header */}
         <div className="flex justify-between items-start border-b border-gray-100 pb-4">
           <div>
-            <h3 className="font-serif text-xl text-[#634032] font-normal">Consultation Intake Questionnaire</h3>
-            <p className="text-[11px] text-[#a38c77] mt-0.5 font-mono">Slot: {selectedDateStr} at {selectedTime}</p>
+            <h3 className="font-serif text-xl text-[#634032] font-normal">
+              <span
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
+                onBlur={(e) => handleEditableBlur('intakeFormTitle', e.currentTarget.innerText)}
+              >
+                {getFormValue('intakeFormTitle', 'Consultation Intake Questionnaire')}
+              </span>
+            </h3>
+            <div className="flex gap-2 items-center mt-1">
+              <p className="text-[11px] text-[#a38c77] font-mono">Slot: {selectedDateStr} at {selectedTime}</p>
+              <span className="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded-2xs font-medium border border-amber-100 animate-pulse">
+                Reserved for 10 minutes
+              </span>
+            </div>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-[#634032] text-lg font-light cursor-pointer">✕</button>
         </div>
-        <div>
-  <h3 className="font-serif text-xl text-[#634032] font-normal">Consultation Intake Questionnaire</h3>
-  <div className="flex gap-2 items-center mt-1">
-    <p className="text-[11px] text-[#a38c77] font-mono">Slot: {selectedDateStr} at {selectedTime}</p>
-    <span className="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded-2xs font-medium border border-amber-100 animate-pulse">
-      Reserved for 10 minutes
-    </span>
-  </div>
-</div>
 
         <form onSubmit={handleSubmit} className="space-y-6 text-xs text-[#634032]">
-          
           {/* PARENT INFO SEGMENT */}
           <div className="space-y-3">
             <span className="text-[10px] uppercase tracking-wider text-[#a38c77] font-bold block border-b border-gray-50 pb-1"> Parent Info</span>
@@ -106,7 +139,16 @@ export default function IntakeFormModal({ isOpen, onClose, selectedDateStr, sele
           </div>
 
           <div className="pt-2 text-center space-y-4">
-            <p className="font-serif italic text-xs text-[#a38c77]">Can't wait to get in touch with you 💕</p>
+            <p className="font-serif italic text-xs text-[#a38c77]">
+              <span
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
+                onBlur={(e) => handleEditableBlur('intakeFormFooter', e.currentTarget.innerText)}
+              >
+                {getFormValue('intakeFormFooter', "Can't wait to get in touch with you")}
+              </span>
+            </p>
             <button type="submit" className="w-full bg-[#634032] text-white py-3 font-serif italic text-base tracking-wide hover:bg-[#a38c77] transition-all duration-300 rounded-xs shadow-xs cursor-pointer">
               Secure Appointment & Proceed to Checkout
             </button>
