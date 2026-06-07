@@ -8,7 +8,7 @@ export const CONFIG = {
   // FIXED: Appended '/api/booking' to perfectly match your Django root URL configurations
   API_BASE_URL: isDevelopment 
     ? 'http://127.0.0.1:8000/api/booking' 
-    : 'https://api.yourlivedomain.com/api/booking', 
+    : 'https://zainab-ahmed.onrender.com/api/booking', 
 
   // 2. THIRD-PARTY GATEWAY PUBLIC KEYS
   // Always use Public keys on the frontend. Never expose your Secret Keys here.
