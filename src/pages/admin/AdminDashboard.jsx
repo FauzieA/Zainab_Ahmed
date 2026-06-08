@@ -11,6 +11,15 @@ import BookingsDatabase from '../../components/admin/BookingsDatabase';
 import Home from '../client/Home';
 import Book from '../client/Booking';
 
+// HELPER UTIL: Dynamically captures the active current day in the local DD/MM/YYYY format
+const getTodayString = () => {
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2, '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const yyyy = today.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+};
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const token = localStorage.getItem('admin_token');
@@ -25,8 +34,11 @@ export default function AdminDashboard() {
   const [toast, setToast] = useState(null);
 
   const [viewMode, setViewMode] = useState('month'); 
-  const [focusedDate, setFocusedDate] = useState('19/05/2026'); 
-  const [selectedDatesPool, setSelectedDatesPool] = useState(['19/05/2026']); 
+  
+  // FIXED: Defaults calendar to current local time, and starts with no dates highlighted or pre-selected
+  const [focusedDate, setFocusedDate] = useState(getTodayString()); 
+  const [selectedDatesPool, setSelectedDatesPool] = useState([]); 
+  
   const [expandedWeekDay, setExpandedWeekDay] = useState(null); 
   const [rescheduleTargetBooking, setRescheduleTargetBooking] = useState(null);
 
@@ -61,11 +73,12 @@ export default function AdminDashboard() {
     setTimeout(() => setToast(null), 4000);
   };
 
+  // FIXED: Cleaned up trailing slashes and removed redundant '/api/booking' paths across all fetches
   const syncWorkspaceData = async () => {
     try {
       setLoading(true);
       const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, ""); 
-      const res = await fetch(`${baseUrl}/api/booking/admin-dashboard-data/`, {
+      const res = await fetch(`${baseUrl}/admin-dashboard-data/`, {
         headers: { 'Authorization': `Token ${token}` }
       });
       if(res.ok) {
@@ -83,7 +96,7 @@ export default function AdminDashboard() {
   const fetchSystemConfigurations = async () => {
     try {
       const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, "");
-      const res = await fetch(`${baseUrl}/api/booking/config/`);
+      const res = await fetch(`${baseUrl}/config/`);
       if (res.ok) {
         const data = await res.json();
         if (data.session_price) setSessionPrice(data.session_price);
@@ -99,7 +112,7 @@ export default function AdminDashboard() {
     setActionLoading(true);
     try {
       const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, "");
-      const res = await fetch(`${baseUrl}/api/booking/config/update-price/`, {
+      const res = await fetch(`${baseUrl}/config/update-price/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${token}` },
         body: JSON.stringify({ price: sessionPrice })
@@ -129,7 +142,7 @@ export default function AdminDashboard() {
       });
       if (res.ok) {
         showToast('Website copy modifications updated successfully.');
-        fetchSystemConfigurations(); // Instantly pull back saved data so previews update
+        fetchSystemConfigurations(); 
       } else {
         showToast('Unable to complete content update.', 'error');
       }

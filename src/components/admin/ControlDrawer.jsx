@@ -108,6 +108,7 @@ export default function ControlDrawer({
   };
 
   // --- SUBMIT COMPREHENSIVE DIRECT RESERVATION CRM DATA ---
+ // --- SUBMIT COMPREHENSIVE DIRECT RESERVATION CRM DATA ---
   const submitManualBookingForm = async (e) => {
     e.preventDefault();
     if (!clientEmail || !manualTime) {
@@ -116,13 +117,15 @@ export default function ControlDrawer({
     }
 
     try {
-      const response = await fetch(`${CONFIG.API_BASE_URL}/api/booking/admin-manual-reserve/`, {
+      // FIXED: Removed duplicate '/api/booking' from endpoint string
+      const response = await fetch(`${CONFIG.API_BASE_URL}/admin-manual-reserve/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${token}` },
+        // FIXED: Re-mapped payloads keys to match Django's exact inputs
         body: JSON.stringify({
-          date_string: focusedDate,
-          time_string: manualTime,
-          client_email: clientEmail,
+          date: focusedDate,
+          time: manualTime,
+          email: clientEmail,
           client_name: clientName,
           client_phone: clientPhone,
           child_name: childName,
@@ -139,7 +142,7 @@ export default function ControlDrawer({
         syncWorkspaceData();
       } else {
         const err = await response.json();
-        showToast(`⚠ ${err.detail || 'Time slot already taken.'}`, "error", 4000);
+        showToast(`⚠ ${err.error || 'Time slot already taken.'}`, "error", 4000);
       }
     } catch {
       showToast("✕ Network error. Please check your connection.", "error", 4000);
@@ -149,7 +152,8 @@ export default function ControlDrawer({
   const submitDayBlackout = async () => {
     if (!window.confirm(`Block all bookings for: ${selectedDatesPool.join(', ')}?`)) return;
     try {
-      const res = await fetch(`${CONFIG.API_BASE_URL}/api/booking/admin-blackout/`, {
+      // FIXED: Removed duplicate '/api/booking' path segment
+      const res = await fetch(`${CONFIG.API_BASE_URL}/admin-blackout-dates/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${token}` },
         body: JSON.stringify({ dates: selectedDatesPool })
