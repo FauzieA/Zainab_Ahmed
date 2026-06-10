@@ -201,7 +201,7 @@ export default function AdminDashboard() {
  const handlePublishSlots = async (timesArray, onSuccess, datesArray) => {
   setActionLoading(true); // or whatever your loading state setter is named
   try {
-    const response = await fetch(`${CONFIG.API_BASE_URL}/api/booking/admin-slots/`, {
+    const response = await fetch(`${CONFIG.API_BASE_URL}/admin-slots/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
