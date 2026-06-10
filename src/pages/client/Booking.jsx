@@ -25,12 +25,24 @@ export default function Book({ inlineEditMode = false, externalState = null, set
   
   const [isIntakeOpen, setIsIntakeOpen] = useState(false);
 
-  const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
+  // Dynamic calendar engine to map exact day counts per month
+  const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
+  const daysCount = getDaysInMonth(currentMonth, currentYear);
+  const daysInMonth = Array.from({ length: daysCount }, (_, i) => i + 1);
 
   const getFullDateKey = (dayNumber) => {
     const formattedDay = dayNumber < 10 ? `0${dayNumber}` : `${dayNumber}`;
     const formattedMonth = currentMonth < 10 ? `0${currentMonth}` : `${currentMonth}`;
     return `${formattedDay}/${formattedMonth}/${currentYear}`;
+  };
+
+  // Helper helper to generate cleanly isolated endpoint routing URLs
+  const getCleanApiUrl = (endpoint) => {
+    const base = CONFIG.API_BASE_URL.replace(/\/$/, "");
+    if (base.endsWith('/api/booking')) {
+      return `${base}/${endpoint}`;
+    }
+    return `${base}/api/booking/${endpoint}`;
   };
 
   const handleMonthChange = (direction) => {
@@ -44,7 +56,9 @@ export default function Book({ inlineEditMode = false, externalState = null, set
   };
 
   useEffect(() => {
-    fetch(`${CONFIG.API_BASE_URL.replace(/\/$/, "")}/api/booking/meta/`)
+    const metaUrl = getCleanApiUrl('meta/');
+    
+    fetch(metaUrl)
       .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
       .then((data) => {
         if (data.site_content) {
@@ -72,10 +86,13 @@ export default function Book({ inlineEditMode = false, externalState = null, set
         if (data.slots && Array.isArray(data.slots)) {
           const groupedSlots = {};
           data.slots.forEach(slot => {
-            if (!groupedSlots[slot.date_string]) {
-              groupedSlots[slot.date_string] = [];
+            // Only mount unbooked slots to the public booking calendar view
+            if (!slot.is_booked) {
+              if (!groupedSlots[slot.date_string]) {
+                groupedSlots[slot.date_string] = [];
+              }
+              groupedSlots[slot.date_string].push(slot.time_string);
             }
-            groupedSlots[slot.date_string].push(slot.time_string);
           });
           
           setAllAvailableSlots(groupedSlots);
@@ -86,8 +103,11 @@ export default function Book({ inlineEditMode = false, externalState = null, set
         }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
-  }, [inlineEditMode]);
+      .catch((err) => {
+        console.error("Failed to compile public site configurations:", err);
+        setLoading(false);
+      });
+  }, [inlineEditMode, currentMonth, currentYear]);
 
   useEffect(() => {
     const targetKey = getFullDateKey(selectedDate);
@@ -98,9 +118,10 @@ export default function Book({ inlineEditMode = false, externalState = null, set
 
   const handleFormSubmissionAndCheckout = async (intakeData) => {
     setIsIntakeOpen(false);
+    const intentUrl = getCleanApiUrl('intent/');
     
     try {
-      const intentResponse = await fetch(`${CONFIG.API_BASE_URL.replace(/\/$/, "")}/api/booking/intent/`, {
+      const intentResponse = await fetch(intentUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
