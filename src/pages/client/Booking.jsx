@@ -15,9 +15,10 @@ export default function Book({ inlineEditMode = false, externalState = null, set
 
   const [allAvailableSlots, setAllAvailableSlots] = useState({});
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
-  const [currentMonth, setCurrentMonth] = useState(5); 
-  const [currentYear, setCurrentYear] = useState(2026);
-  const [selectedDate, setSelectedDate] = useState(19); 
+  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth() + 1);
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [selectedDate, setSelectedDate] = useState(today.getDate());
   const [selectedTime, setSelectedTime] = useState('');
   const [loading, setLoading] = useState(true);
   const [liveContent, setLiveContent] = useState(null);
