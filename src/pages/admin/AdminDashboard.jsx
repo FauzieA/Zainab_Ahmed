@@ -287,7 +287,7 @@ export default function AdminDashboard() {
       });
       if (res.ok) {
         showToast('Client appointment shifted successfully.');
-        setRescheduleTargetBooking(null); // Close active target state
+        setRescheduleTargetBooking(null); 
         syncWorkspaceData();
       } else {
         showToast('Reschedule processing error.', 'error');
@@ -298,6 +298,7 @@ export default function AdminDashboard() {
       setActionLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-[#efe9e4]/20 flex flex-col antialiased font-sans text-gray-800 selection:bg-[#efe9e4]">
