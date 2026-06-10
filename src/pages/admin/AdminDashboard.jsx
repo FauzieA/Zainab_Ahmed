@@ -198,10 +198,106 @@ export default function AdminDashboard() {
     };
   };
 
-  const handleCancelBooking = async () => {};
-  const handleDeleteSlot = async () => {};
-  const handlePublishSlots = async () => {};
-  const handleExecuteReschedule = async () => {};
+ const handlePublishSlots = async (payload) => {
+    setActionLoading(true);
+    try {
+      const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/admin-slots/`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Token ${token}` 
+        },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        showToast('Time slots successfully generated and published.');
+        syncWorkspaceData(); // Refresh calendar viewports instantly
+      } else {
+        showToast('Could not complete slot creation.', 'error');
+      }
+    } catch (err) {
+      showToast('Network connection timeout.', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteSlot = async (slotId) => {
+    setActionLoading(true);
+    try {
+      const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/admin-slots-delete/${slotId}/`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Token ${token}` }
+      });
+      if (res.ok) {
+        showToast('Selected time slot removed.');
+        syncWorkspaceData();
+      } else {
+        showToast('Unable to drop target slot.', 'error');
+      }
+    } catch (err) {
+      showToast('Network synchronization failure.', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancelBooking = async (bookingId) => {
+    setActionLoading(true);
+    try {
+      const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/admin-cancel/`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Token ${token}` 
+        },
+        body: JSON.stringify({ booking_id: bookingId })
+      });
+      if (res.ok) {
+        showToast('Reservation status flagged as cancelled.');
+        syncWorkspaceData();
+      } else {
+        showToast('Cancellation update unfulfilled.', 'error');
+      }
+    } catch (err) {
+      showToast('Server connection lost.', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleExecuteReschedule = async (bookingId, newDate, newTime) => {
+    setActionLoading(true);
+    try {
+      const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/admin-reschedule/`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Token ${token}` 
+        },
+        body: JSON.stringify({ 
+          booking_id: bookingId, 
+          new_date: newDate, 
+          new_time: newTime 
+        })
+      });
+      if (res.ok) {
+        showToast('Client appointment shifted successfully.');
+        setRescheduleTargetBooking(null); // Close active target state
+        syncWorkspaceData();
+      } else {
+        showToast('Reschedule processing error.', 'error');
+      }
+    } catch (err) {
+      showToast('Target host unreachable.', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#efe9e4]/20 flex flex-col antialiased font-sans text-gray-800 selection:bg-[#efe9e4]">
