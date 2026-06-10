@@ -198,30 +198,35 @@ export default function AdminDashboard() {
     };
   };
 
- const handlePublishSlots = async (payload) => {
-    setActionLoading(true);
-    try {
-      const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, "");
-      const res = await fetch(`${baseUrl}/admin-slots/`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          'Authorization': `Token ${token}` 
-        },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        showToast('Time slots successfully generated and published.');
-        syncWorkspaceData(); // Refresh calendar viewports instantly
-      } else {
-        showToast('Could not complete slot creation.', 'error');
-      }
-    } catch (err) {
-      showToast('Network connection timeout.', 'error');
-    } finally {
-      setActionLoading(false);
+ const handlePublishSlots = async (timesArray, onSuccess, datesArray) => {
+  setActionLoading(true); // or whatever your loading state setter is named
+  try {
+    const response = await fetch(`${CONFIG.API_BASE_URL}/api/booking/admin-slots/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${token}`
+      },
+      body: JSON.stringify({
+        date_strings: datesArray,  // Maps to data.get('date_strings') in Django
+        time_strings: timesArray   // Maps to data.get('time_strings') in Django
+      })
+    });
+
+    if (response.ok) {
+      showToast("✓ Slots deployed successfully!", "success");
+      if (onSuccess) onSuccess(); // Clears the form checkboxes cleanly
+      syncWorkspaceData();        // Refreshes the calendar view
+    } else {
+      const err = await response.json();
+      showToast(`⚠ ${err.error || 'Could not complete slot creation.'}`, "error", 4000);
     }
-  };
+  } catch (error) {
+    showToast("✕ Network error while creating slots.", "error", 4000);
+  } finally {
+    setActionLoading(false);
+  }
+};
 
   const handleDeleteSlot = async (slotId) => {
     setActionLoading(true);
