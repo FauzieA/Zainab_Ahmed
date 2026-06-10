@@ -61,7 +61,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!token) {
-      navigate('/login');
+      navigate('/admin/login');
       return;
     }
     syncWorkspaceData();
