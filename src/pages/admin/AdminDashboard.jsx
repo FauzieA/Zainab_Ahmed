@@ -141,7 +141,7 @@ export default function AdminDashboard() {
         body: JSON.stringify({ site_content: siteContent })
       });
       if (res.ok) {
-        showToast('Website copy modifications updated successfully.');
+      showToast('Website text saved.');
         fetchSystemConfigurations(); 
       } else {
         showToast('Unable to complete content update.', 'error');
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
     });
 
     if (response.ok) {
-      showToast("✓ Slots deployed successfully!", "success");
+      showToast("✓ Time slots added!", "success");
       if (onSuccess) onSuccess(); // Clears the form checkboxes cleanly
       syncWorkspaceData();        // Refreshes the calendar view
     } else {
@@ -316,10 +316,10 @@ export default function AdminDashboard() {
       <header className="bg-white border-b border-[#bfa791]/15 px-8 py-5 flex justify-between items-center">
         <div className="flex items-center space-x-3">
           <div className="w-2 h-2 rounded-full bg-[#634032]" />
-          <h1 className="font-serif text-md uppercase tracking-widest text-[#634032]">Management Workspace</h1>
+          <h1 className="font-serif text-md uppercase tracking-widest text-[#634032]">Consultant Dashboard</h1>
         </div>
         <div className="flex items-center space-x-6">
-          <span className="text-[10px] font-mono tracking-widest uppercase text-gray-400">Authenticated // {userLabel}</span>
+          <span className="text-[10px] font-mono tracking-widest uppercase text-gray-400">Logged in as {userLabel}</span>
           <button onClick={() => { localStorage.clear(); navigate('/admin/login'); }} className="text-[10px] uppercase tracking-widest font-semibold text-red-700 hover:text-red-900 transition-colors cursor-pointer">Sign Out</button>
         </div>
       </header>
@@ -340,14 +340,14 @@ export default function AdminDashboard() {
             onClick={() => setActiveSubPage('pricing')}
             className={`w-full text-left px-3 py-2.5 text-xs font-medium uppercase tracking-widest transition-all rounded-xs cursor-pointer ${activeSubPage === 'pricing' ? 'bg-[#634032] text-white' : 'text-[#634032]/70 hover:bg-[#efe9e4]/30 hover:text-[#634032]'}`}
           >
-            Pricing Control
+            Session Price
           </button>
 
           <button 
             onClick={() => setActiveSubPage('content')}
             className={`w-full text-left px-3 py-2.5 text-xs font-medium uppercase tracking-widest transition-all rounded-xs cursor-pointer ${activeSubPage === 'content' ? 'bg-[#634032] text-white' : 'text-[#634032]/70 hover:bg-[#efe9e4]/30 hover:text-[#634032]'}`}
           >
-            Editorial System
+            Edit Website Text
           </button>
         </aside>
 
@@ -394,7 +394,7 @@ export default function AdminDashboard() {
           {activeSubPage === 'pricing' && (
             <div className="max-w-md bg-white border border-[#bfa791]/20 p-6 rounded-xs shadow-2xs space-y-4">
               <div>
-                <h3 className="font-serif text-md text-[#634032] uppercase tracking-wide">Base Service Fee</h3>
+                <h3 className="font-serif text-md text-[#634032] uppercase tracking-wide">Session Price</h3>
                 <p className="text-[11px] text-[#a38c77]">Set the default flat currency value charged for private client consultations.</p>
               </div>
               <form onSubmit={handleSavePricing} className="space-y-4">
@@ -420,7 +420,7 @@ export default function AdminDashboard() {
           {activeSubPage === 'content' && (
             <div className="space-y-4">
               <div className="bg-white border border-[#bfa791]/20 p-4 rounded-xs flex justify-between items-center shadow-xs">
-                <h3 className="font-serif text-md text-[#634032] uppercase tracking-wide">Editorial System</h3>
+                <h3 className="font-serif text-md text-[#634032] uppercase tracking-wide">Edit Website Text</h3>
                 <button 
                   onClick={handleSaveContent} 
                   disabled={actionLoading}

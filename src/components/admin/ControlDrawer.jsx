@@ -45,7 +45,7 @@ export default function ControlDrawer({
   const executePatternPublish = async (e) => {
     e.preventDefault();
     if (selectedTimes.length === 0) {
-      showToast("Please select at least one time slot.", "error", 3000);
+      showToast("Please pick at least one time slot.", "error", 3000);
       return;
     }
 
@@ -55,7 +55,7 @@ export default function ControlDrawer({
       finalDatesArray = [...selectedDatesPool];
     } else if (publishMode === 'range' || publishMode === 'recurring') {
       if (!startDate || !endDate) {
-        showToast("Please select both start and end date boundaries.", "error", 3000);
+        showToast("Please choose both a start and end date.", "error", 3000);
         return;
       }
       
@@ -63,7 +63,7 @@ export default function ControlDrawer({
       const boundaryEnd = new Date(endDate);
 
       if (current > boundaryEnd) {
-        showToast("Start date cannot be after end date.", "error", 3000);
+        showToast("Start date must be before the end date.", "error", 3000);
         return;
       }
 
@@ -88,12 +88,12 @@ export default function ControlDrawer({
     // Secondary validation rule to prevent historically broken entries
     const containsPastDate = finalDatesArray.some(d => isPastDate(d));
     if (containsPastDate) {
-      showToast("The pattern contains past dates. Adjust boundaries to upcoming options.", "error", 4000);
+      showToast("Your selection includes past dates. Please choose future dates.", "error", 4000);
       return;
     }
 
     if (finalDatesArray.length === 0) {
-      showToast("No calendar days matched your pattern rules.", "error", 3000);
+      showToast("No dates matched that selection.", "error", 3000);
       return;
     }
 
@@ -183,12 +183,12 @@ export default function ControlDrawer({
       {/* PANEL 1: AUDIT COMBINED POOL SELECTION TIMELINES */}
       <div className="bg-white border border-[#bfa791]/20 p-6 rounded-sm shadow-2xs">
         <div className="flex justify-between items-center mb-1">
-          <h3 className="font-serif text-base font-normal">Selected Slots Detail</h3>
+          <h3 className="font-serif text-base font-normal">Selected dates & times</h3>
           <span className="text-[10px] font-mono bg-[#efe9e4] px-2 py-0.5 text-[#634032] rounded-xs font-bold">
-            {selectedDatesPool.length} Day(s) Selected
+            {selectedDatesPool.length} {selectedDatesPool.length === 1 ? 'day selected' : 'days selected'}
           </span>
         </div>
-        <p className="text-[11px] text-[#a38c77] mb-4">Reviewing available openings and bookings for your active selection pool.</p>
+        <p className="text-[11px] text-[#a38c77] mb-4">See openings and bookings for the dates you picked.</p>
         <div className="w-full h-[1px] bg-[#bfa791]/15 mb-4"></div>
 
         {rescheduleTargetBooking && (
@@ -252,7 +252,7 @@ export default function ControlDrawer({
           })}
 
           {selectedDatesPool.every(d => slots.filter(s => s.date_string === d).length === 0) && (
-            <p className="text-xs italic text-[#bfa791]/60 py-6 text-center">No time slots are configured for the selected date(s).</p>
+            <p className="text-xs italic text-[#bfa791]/60 py-6 text-center">No times set for these dates.</p>
           )}
         </div>
       </div>
@@ -265,19 +265,19 @@ export default function ControlDrawer({
             type="button" onClick={() => setPanelActionTab('publish')} 
             className={`flex-1 text-center py-1.5 rounded-xs transition-all ${panelActionTab === 'publish' ? 'bg-[#634032] text-white shadow-xs' : 'text-[#634032]/60 hover:text-[#634032]'}`}
           >
-            Add Slots
+            Add Times
           </button>
           <button 
             type="button" onClick={() => setPanelActionTab('manual')} 
             className={`flex-1 text-center py-1.5 rounded-xs transition-all ${panelActionTab === 'manual' ? 'bg-[#634032] text-white shadow-xs' : 'text-[#634032]/60 hover:text-[#634032]'}`}
           >
-            Reserve Custom
+            Book for Someone
           </button>
           <button 
             type="button" onClick={() => setPanelActionTab('blackout')} 
             className={`flex-1 text-center py-1.5 rounded-xs transition-all ${panelActionTab === 'blackout' ? 'bg-red-600 text-white shadow-xs' : 'text-red-600/60 hover:text-red-600'}`}
           >
-            Block Dates
+            Close Dates
           </button>
         </div>
 
@@ -287,13 +287,13 @@ export default function ControlDrawer({
             
             {/* SUB-PILL PATTERN FILTERS */}
             <div className="flex border-b border-gray-100 pb-2 gap-4 text-[10px] uppercase font-bold tracking-wider text-gray-400">
-              <button type="button" onClick={() => setPublishMode('selection')} className={publishMode === 'selection' ? 'text-[#634032] border-b border-[#634032]' : ''}>Active Highlights</button>
-              <button type="button" onClick={() => setPublishMode('range')} className={publishMode === 'range' ? 'text-[#634032] border-b border-[#634032]' : ''}>Continuous Range</button>
-              <button type="button" onClick={() => setPublishMode('recurring')} className={publishMode === 'recurring' ? 'text-[#634032] border-b border-[#634032]' : ''}>Weekly Cadence</button>
+              <button type="button" onClick={() => setPublishMode('selection')} className={publishMode === 'selection' ? 'text-[#634032] border-b border-[#634032]' : ''}>Selected Dates</button>
+              <button type="button" onClick={() => setPublishMode('range')} className={publishMode === 'range' ? 'text-[#634032] border-b border-[#634032]' : ''}>Date Range</button>
+              <button type="button" onClick={() => setPublishMode('recurring')} className={publishMode === 'recurring' ? 'text-[#634032] border-b border-[#634032]' : ''}>Repeat Weekly</button>
             </div>
 
             {publishMode === 'selection' && (
-              <p className="text-[11px] text-[#a38c77]">Opening hours across all ({selectedDatesPool.length}) highlighted calendar coordinates.</p>
+              <p className="text-[11px] text-[#a38c77]">{`Adding times for the ${selectedDatesPool.length} selected ${selectedDatesPool.length === 1 ? 'date' : 'dates'}.`}</p>
             )}
 
             {(publishMode === 'range' || publishMode === 'recurring') && (
@@ -348,7 +348,7 @@ export default function ControlDrawer({
             </div>
 
             <button type="submit" disabled={actionLoading} className="w-full bg-[#634032] text-white py-2 text-xs uppercase tracking-wider font-semibold rounded-xs hover:bg-[#a38c77] transition-colors cursor-pointer">
-              Deploy Specified Strategy
+              Add These Times
             </button>
           </form>
         )}
@@ -358,11 +358,11 @@ export default function ControlDrawer({
           <form onSubmit={submitManualBookingForm} className="space-y-3 text-xs">
             {isPastDate(focusedDate) ? (
               <div className="bg-gray-50 text-gray-400 p-3 italic rounded-xs text-center border">
-                Appointments cannot be retroactively booked into past dates.
+                Can't book into past dates.
               </div>
             ) : (
               <>
-                <p className="text-[11px] text-[#a38c77]">Directly book an appointment onto <strong>{focusedDate}</strong>:</p>
+                <p className="text-[11px] text-[#a38c77]">Create a booking for <strong>{focusedDate}</strong>:</p>
                 <div className="grid grid-cols-2 gap-2">
                   <input type="text" placeholder="Client Full Name *" required value={clientName} onChange={e => setClientName(e.target.value)} className="border p-2 rounded-xs bg-white" />
                   <input type="email" placeholder="Email Address *" required value={clientEmail} onChange={e => setClientEmail(e.target.value)} className="border p-2 rounded-xs bg-white" />
@@ -387,20 +387,20 @@ export default function ControlDrawer({
                 <div className="bg-gray-50/50 p-2.5 rounded-xs border border-gray-100 space-y-2">
                   <label className="flex items-center space-x-2 font-medium cursor-pointer text-gray-700">
                     <input type="checkbox" checked={isRecurring} onChange={e => setIsRecurring(e.target.checked)} className="accent-[#634032]" />
-                    <span>Enable recurring appointment series</span>
+                    <span>Make this a recurring appointment</span>
                   </label>
                   
                   {isRecurring && (
                     <div className="grid grid-cols-2 gap-2 pt-1 border-t border-gray-100/60 mt-1">
                       <div>
-                        <label className="text-[9px] uppercase tracking-wider text-gray-400 block mb-0.5">Frequency Cadence</label>
+                        <label className="text-[9px] uppercase tracking-wider text-gray-400 block mb-0.5">Repeat frequency</label>
                         <select value={recurringFrequency} onChange={e => setRecurringFrequency(e.target.value)} className="w-full border p-1 bg-white text-gray-600 rounded-2xs">
-                          <option value="WEEKLY">Weekly Interval</option>
-                          <option value="MONTHLY">Monthly Date-Match</option>
+                          <option value="WEEKLY">Weekly</option>
+                          <option value="MONTHLY">Monthly</option>
                         </select>
                       </div>
                       <div>
-                        <label className="text-[9px] uppercase tracking-wider text-gray-400 block mb-0.5">Total Occurrences</label>
+                        <label className="text-[9px] uppercase tracking-wider text-gray-400 block mb-0.5">Number of sessions</label>
                         <div className="flex items-center space-x-1">
                           <input type="number" min="2" max="24" value={recurringCount} onChange={e => setRecurringCount(e.target.value)} className="w-full border p-1 text-center bg-white rounded-2xs font-semibold" />
                           <span className="text-[10px] text-gray-400">sessions</span>
@@ -411,7 +411,7 @@ export default function ControlDrawer({
                 </div>
 
                 <button type="submit" className="w-full bg-[#634032] text-white py-2 text-xs uppercase tracking-wider font-semibold rounded-xs hover:bg-[#a38c77] transition-colors cursor-pointer">
-                  Confirm Reservation
+                  Confirm booking
                 </button>
               </>
             )}
@@ -422,14 +422,14 @@ export default function ControlDrawer({
         {panelActionTab === 'blackout' && (
           <div className="space-y-3">
             <p className="text-[11px] text-red-800 leading-relaxed">
-              This will instantly remove all unbooked time slots and close public booking availability for the selected dates.
+              This will remove all open times and stop bookings for these dates.
             </p>
             <div className="bg-red-50/40 border border-red-100 p-2.5 rounded-xs text-[11px] text-gray-700 max-h-16 overflow-y-auto font-mono">
               <span className="font-sans font-bold block text-red-900 uppercase text-[9px] mb-0.5">Target Range:</span>
               {selectedDatesPool.join(', ')}
             </div>
             <button type="button" onClick={submitDayBlackout} className="w-full bg-red-600 text-white py-2 text-xs uppercase tracking-wider font-bold rounded-xs hover:bg-red-700 transition-colors cursor-pointer">
-              Block Availability ({selectedDatesPool.length} Days)
+              Close availability ({selectedDatesPool.length} days)
             </button>
           </div>
         )}
