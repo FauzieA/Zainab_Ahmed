@@ -320,7 +320,7 @@ export default function AdminDashboard() {
         </div>
         <div className="flex items-center space-x-6">
           <span className="text-[10px] font-mono tracking-widest uppercase text-gray-400">Authenticated // {userLabel}</span>
-          <button onClick={() => { localStorage.clear(); navigate('/login'); }} className="text-[10px] uppercase tracking-widest font-semibold text-red-700 hover:text-red-900 transition-colors cursor-pointer">Sign Out</button>
+          <button onClick={() => { localStorage.clear(); navigate('/admin/login'); }} className="text-[10px] uppercase tracking-widest font-semibold text-red-700 hover:text-red-900 transition-colors cursor-pointer">Sign Out</button>
         </div>
       </header>
 
