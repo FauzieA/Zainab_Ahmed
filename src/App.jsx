@@ -6,7 +6,7 @@ import Home from './pages/client/Home';
 import Book from './pages/client/Booking'; 
 import About from './pages/client/About'; 
 import Contact from './pages/client/Contact';
-import Consultation from './pages/client/Consultation';
+import Consultation from './pages/client/Consultation.jsx';
 
 // New Administrative Dashboard View Layouts
 import AdminLogin from './pages/admin/AdminLogin';

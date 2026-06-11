@@ -168,15 +168,15 @@ export default function Consultation({ inlineEditMode = false, externalState = n
       </section>
 
       {/* SECTION 2: THE CYCLE SEGMENT */}
-      <section className="bg-white py-24 px-6 text-center border-y border-[#bfa791]/15">
+      <section className="bg-white py-24 px-6 text-center">
         <div className="max-w-3xl mx-auto space-y-8">
           
-          {/* 1. Section Heading: THE CYCLE... */}
+          {/* Section Heading: THE CYCLE... */}
           <h2 
             style={{
               fontFamily: "Helvetica, 'w01-roman', sans-serif",
               fontSize: '40px',
-              fontWeight: '400',
+              fontWeight: '550',
               lineHeight: '40px',
               letterSpacing: '-2px',
               color: 'rgb(191, 167, 145)'
@@ -193,10 +193,10 @@ export default function Consultation({ inlineEditMode = false, externalState = n
             </span>
           </h2>
           
-          {/* 2 & 3. Main Sequence & Secondary Text */}
+          {/* Main Sequence & Secondary Text */}
           <div 
             style={{
-              fontFamily: "Helvetica, 'w01-roman', sans-serif",
+              fontFamily: "'Times New Roman', times, serif",
               fontSize: '18px',
               fontWeight: '400',
               lineHeight: '25.2px',
@@ -222,11 +222,11 @@ export default function Consultation({ inlineEditMode = false, externalState = n
             </p>
           </div>
 
-          {/* 4. Supporting Statement */}
-          <div className="pt-6 border-t border-[#bfa791]/20">
+          {/* Supporting Statement (No border/line) */}
+          <div className="pt-6">
             <p
               style={{
-                fontFamily: "Helvetica, 'w01-roman', sans-serif",
+                fontFamily: "'Times New Roman', times, serif",
                 fontSize: '18px',
                 fontWeight: '400',
                 lineHeight: '25.2px',
@@ -242,63 +242,101 @@ export default function Consultation({ inlineEditMode = false, externalState = n
           </div>
         </div>
       </section>
+
+     
       {/* SECTION 3: DEEP EXTENDED BIO */}
-      <section className="bg-[#efe9e4]/30 py-24 px-6 md:px-12">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+      <section className="bg-[#efe9e4] py-24 px-6 md:px-12 transition-all duration-300">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
           
-          <div className="md:col-span-5 flex flex-col items-center md:items-start text-center md:text-left">
-            <h2 className="text-[28px] md:text-[34px] tracking-wide text-[#bfa791] font-normal leading-tight uppercase">
+          {/* Left Column: Portrait Frame */}
+          <div className="md:col-span-5 flex justify-center md:justify-start">
+            <div className="w-full max-w-[360px] aspect-[3/4] bg-[#fff] overflow-hidden border border-[#bfa791]/10 rounded-xs shadow-xs">
+              <img 
+                src={zeeImage} 
+                alt="Zainab Ahmed Portrait Profile" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Right Column: Bio Content with Matching Typography */}
+          <div className="md:col-span-7 flex flex-col items-center md:items-start text-left">
+            
+            {/* Stacked Heading Title */}
+            <h2 
+              style={{ 
+                fontFamily: "'Times New Roman', times, serif",
+                fontSize: '48px', // Scaled slightly for bio context
+                fontWeight: '400',
+                lineHeight: '48px',
+                color: 'rgb(191, 167, 145)'
+              }}
+              className="uppercase mb-8 w-full text-center md:text-left"
+            >
               <span
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
-                className={inlineEditMode ? 'bg-white ring-1 ring-dashed ring-[#bfa791] px-1' : ''}
-                onBlur={(e) => handleEditableBlur('consultAboutTitle', e.currentTarget.innerText)}
+                className={inlineEditMode ? 'bg-white/80 ring-1 ring-dashed ring-[#bfa791] px-1 block' : 'block'}
+                onBlur={(e) => handleEditableBlur('consultAboutHeader1', e.currentTarget.innerText)}
               >
-                {getConsultValue('consultAboutTitle', 'ABOUT ZAINAB AHMED')}
+                {getConsultValue('consultAboutHeader1', 'ABOUT')}
+              </span>
+              <span
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-white/80 ring-1 ring-dashed ring-[#bfa791] px-1 block mt-2' : 'block mt-2'}
+                onBlur={(e) => handleEditableBlur('consultAboutHeader2', e.currentTarget.innerText)}
+              >
+                {getConsultValue('consultAboutHeader2', 'ZAINAB AHMED')}
               </span>
             </h2>
-            <div className="w-full max-w-[280px] mt-8 aspect-square rounded-full overflow-hidden bg-neutral-100 border-2 border-white shadow-xs">
-              <img 
-                src="/images/zainab-avatar.png" 
-                alt="Zainab Ahmed Avatar Circle" 
-                className="w-full h-full object-cover grayscale-10"
-                onError={(e) => { e.target.src = "https://via.placeholder.com/300x300?text=Zainab+Profile"; }}
-              />
+            
+            {/* Body Paragraphs */}
+            <div 
+              style={{
+                fontFamily: "'Times New Roman', times, serif",
+                fontSize: '18px',
+                fontWeight: '400',
+                lineHeight: '25.2px',
+                color: 'rgb(191, 167, 145)'
+              }}
+              className="space-y-6 text-justify md:text-left"
+            >
+              <p
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-white/80 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}
+                onBlur={(e) => handleEditableBlur('consultAboutBio1', e.currentTarget.innerText)}
+              >
+                {getConsultValue('consultAboutBio1', 'I’ve always been passionate about children and the environments they grow in. That passion led me to study Early Childhood Education after earning my first degree in Business Administration. I’m currently pursuing my Master’s degree in Educational Administration and Planning, continuing to deepen my understanding of how children learn, grow, and thrive.')}
+              </p>
+              <p
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-white/80 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}
+                onBlur={(e) => handleEditableBlur('consultAboutBio2', e.currentTarget.innerText)}
+              >
+                {getConsultValue('consultAboutBio2', 'But for me, it was never just about studying children. I became more interested in the people, systems, and environments shaping their everyday experiences. The parents raising them, the schools teaching them, and the communities supporting them.')}
+              </p>
+              <p
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-white/80 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}
+                onBlur={(e) => handleEditableBlur('consultAboutBio3', e.currentTarget.innerText)}
+              >
+                {getConsultValue('consultAboutBio3', 'At the heart of everything I do is a simple belief: when we better understand children, we can better support them. And when children are supported well, they grow into confident, capable, and emotionally secure individuals.')}
+              </p>
             </div>
-            <p className="text-[13px] uppercase tracking-widest text-[#bfa791]/70 font-sans mt-4 italic">
+            
+            <p className="text-[13px] uppercase tracking-widest text-[#bfa791] font-sans mt-8 italic w-full text-center md:text-left">
               Parenting & Child Development Consultant
-            </p>
-          </div>
-
-          <div className="md:col-span-7 space-y-6 text-[16px] md:text-[17px] text-[#bfa791] font-serif leading-relaxed text-left opacity-95">
-            <p
-              contentEditable={inlineEditMode}
-              suppressContentEditableWarning={inlineEditMode}
-              className={inlineEditMode ? 'bg-white ring-1 ring-dashed ring-[#bfa791] px-1' : ''}
-              onBlur={(e) => handleEditableBlur('consultAboutBio1', e.currentTarget.innerText)}
-            >
-              {getConsultValue('consultAboutBio1', 'I’ve always been passionate about children and the environments they grow in. That passion led me to study Early Childhood Education after earning my first degree in Business Administration. I’m currently pursuing my Master’s degree in Educational Administration and Planning, continuing to deepen my understanding of how children learn, grow, and thrive.')}
-            </p>
-            <p
-              contentEditable={inlineEditMode}
-              suppressContentEditableWarning={inlineEditMode}
-              className={inlineEditMode ? 'bg-white ring-1 ring-dashed ring-[#bfa791] px-1' : ''}
-              onBlur={(e) => handleEditableBlur('consultAboutBio2', e.currentTarget.innerText)}
-            >
-              {getConsultValue('consultAboutBio2', 'But for me, it was never just about studying children. I became more interested in the people, systems, and environments shaping their everyday experiences. The parents raising them, the schools teaching them, and the communities supporting them.')}
-            </p>
-            <p
-              contentEditable={inlineEditMode}
-              suppressContentEditableWarning={inlineEditMode}
-              className={inlineEditMode ? 'bg-white ring-1 ring-dashed ring-[#bfa791] px-1' : ''}
-              onBlur={(e) => handleEditableBlur('consultAboutBio3', e.currentTarget.innerText)}
-            >
-              {getConsultValue('consultAboutBio3', 'At the heart of everything I do is a simple belief: when we better understand children, we can better support them. And when children are supported well, they grow into confident, capable, and emotionally secure individuals.')}
             </p>
           </div>
 
         </div>
       </section>
+
+
 
       {/* SECTION 4: THE STEP-BY-STEP PROCESS */}
       <section className="bg-white py-24 px-6 md:px-12 text-center">
