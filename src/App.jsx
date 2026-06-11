@@ -4,6 +4,9 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/client/Home';
 import Book from './pages/client/Booking'; 
+import About from './pages/client/About'; 
+import Contact from './pages/client/Contact';
+import Consultation from './pages/client/Consultation';
 
 // New Administrative Dashboard View Layouts
 import AdminLogin from './pages/admin/AdminLogin';
@@ -45,8 +48,16 @@ function MasterLayoutSwitcher() {
       <div className="flex-1 pt-16">
         <Routes>
           <Route path="/" element={<Home />} />
+          
+          {/* Keep /book intact so the buttons on the consultation page can redirect here seamlessly */}
           <Route path="/book" element={<Book />} />
-        </Routes>
+          
+          {/* 2. ADD THE NEW ROUTE MATCHING THE NAVBAR LINK */}
+          <Route path="/consultation" element={<Consultation />} />
+          
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+         </Routes>
       </div>
 
       <Footer />

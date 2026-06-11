@@ -39,66 +39,124 @@ export default function Home({ inlineEditMode = false, externalState = null, set
 
   return (
     <div className="min-h-screen bg-white text-[#bfa791] font-sans antialiased selection:bg-[#efe9e4] selection:text-[#a38c77]">
-      <section className="w-full relative overflow-hidden bg-white pt-12">
-        <div className="max-w-6xl mx-auto px-6 py-16 md:py-28 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      {/* =========================================================================
+          1. HERO HEADER SECTION (WIX TYPOGRAPHY MATRICES + PIXEL ALIGNMENT MATCH)
+          ========================================================================= */}
+      <section className="w-full bg-white pt-16 pb-24 subpixel-antialiased">
+        <div className="max-w-6xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-x-12 lg:gap-x-20 items-start">
           
-          <div className="lg:col-span-6 flex flex-col items-center lg:items-end text-center lg:text-right relative">
-            <div className="relative p-6 bg-[#efe9e4]/30 border border-[#bfa791]/10 rounded-sm max-w-[360px] w-full">
-              <div className="absolute -top-3 -left-3 w-12 h-12 border-t border-l border-[#bfa791]/30"></div>
-              
-              <h1 className="font-serif font-normal text-4xl md:text-5xl tracking-[0.2em] text-[#bfa791] uppercase leading-[1.2] mb-3">
-                <span
-                  contentEditable={inlineEditMode}
-                  suppressContentEditableWarning={inlineEditMode}
-                  className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none block' : ''}
-                  onBlur={(e) => handleEditableBlur('homeHeroTitle', e.currentTarget.innerText)}
-                >
-                  {getHomeValue('homeHeroTitle', 'Zainab A. Ahmed')}
-                </span>
-              </h1>
-              <p className="font-serif text-xs md:text-sm tracking-[0.12em] text-[#a38c77] italic mb-6">
-                <span
-                  contentEditable={inlineEditMode}
-                  suppressContentEditableWarning={inlineEditMode}
-                  className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-                  onBlur={(e) => handleEditableBlur('homeHeroSubtitle', e.currentTarget.innerText)}
-                >
-                  {getHomeValue('homeHeroSubtitle', 'Parenting & Child Development Consultant')}
-                </span>
-              </p>
-              
-              <div className="w-full aspect-[3/4] bg-[#efe9e4]/60 border border-[#bfa791]/20 rounded-xs overflow-hidden shadow-xs">
-                <img 
-                  src={zeeImage}
-                  alt="Zainab A. Ahmed" 
-                  className="w-full h-full object-cover object-center grayscale-[15%] contrast-[105%] hover:scale-[1.02] transition-transform duration-500 ease-out"
-                />
-              </div>
-            </div>
-          </div>
+          {/* ROW 1: Identity Branding Header Header Block */}
+          <div className="lg:col-span-6 flex flex-col items-center text-center mb-10 lg:mb-14">
+            {/* 1. Main Name (ZAINAB AHMED) */}
+            <h1 
+              style={{ 
+                fontFamily: '"times new roman", times, serif', 
+                fontSize: '82px', 
+                lineHeight: '82px', 
+                fontWeight: '400',
+                color: 'rgb(191, 167, 145)'
+              }}
+              className="text-center max-w-[340px] mx-auto break-words tracking-normal uppercase"
+            >
+              <span
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none block' : 'block'}
+                onBlur={(e) => handleEditableBlur('homeHeroTitle', e.currentTarget.innerText)}
+              >
+                {getHomeValue('homeHeroTitle', 'Zainab A. Ahmed')}
+              </span>
+            </h1>
 
-          <div className="lg:col-span-6 space-y-6 max-w-xl mx-auto lg:mx-0 text-center lg:text-left">
-            <div className="inline-block px-3 py-1 bg-[#efe9e4]/40 border border-[#bfa791]/20 rounded-full text-[11px] uppercase tracking-[0.2em] font-medium text-[#a38c77]">
+            {/* 2. Professional Title */}
+            <p 
+              style={{ 
+                fontFamily: '"times new roman", times, serif', 
+                fontSize: '18px', 
+                lineHeight: '25.2px', 
+                fontWeight: '400',
+                color: 'rgb(191, 167, 145)'
+              }}
+              className="mt-5 tracking-normal"
+            >
               <span
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
                 className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-                onBlur={(e) => handleEditableBlur('homeHeroWelcomeTag', e.currentTarget.innerText)}
+                onBlur={(e) => handleEditableBlur('homeHeroSubtitle', e.currentTarget.innerText)}
               >
-                {getHomeValue('homeHeroWelcomeTag', 'Welcome & Support')}
+                {getHomeValue('homeHeroSubtitle', 'Parenting & Child Development Consultant')}
               </span>
+            </p>
+          </div>
+
+          {/* Desktop Right Spacer - Keeps layout aligned without breaking grid flow */}
+          <div className="hidden lg:col-span-6 lg:block"></div>
+
+
+          {/* ROW 2: Media and Editorial Core Pitch (Guaranteed Top Alignment Match) */}
+          {/* Left Column: Profile Media Graphic */}
+          <div className="lg:col-span-6 flex flex-col items-center mb-12 lg:mb-0">
+            <div className="w-full max-w-[380px] aspect-[3/4] overflow-hidden">
+              <img 
+                src={zeeImage}
+                alt="Zainab A. Ahmed" 
+                className="w-full h-full object-cover object-center"
+              />
             </div>
-            <h2 className="font-serif text-3xl md:text-4xl italic text-[#a38c77] font-light tracking-wide leading-tight max-w-md">
+          </div>
+
+          {/* Right Column: Text Content starting precisely with top of image */}
+          <div className="lg:col-span-6 flex flex-col justify-start">
+            
+            {/* System Key Tag - Preserved & visible only when editing */}
+            {inlineEditMode && (
+              <div className="p-2 border border-dashed border-[#bfa791]/40 bg-yellow-50/20 rounded text-xs mb-4 font-sans">
+                <span className="text-[10px] font-mono text-[#a38c77] block mb-1">System Tag (Hidden in Production):</span>
+                <span
+                  contentEditable={inlineEditMode}
+                  suppressContentEditableWarning={inlineEditMode}
+                  className="bg-yellow-50/40 px-1 focus:outline-none"
+                  onBlur={(e) => handleEditableBlur('homeHeroWelcomeTag', e.currentTarget.innerText)}
+                >
+                  {getHomeValue('homeHeroWelcomeTag', 'Welcome & Support')}
+                </span>
+              </div>
+            )}
+
+            {/* 3. Tagline (You don't have to figure it out alone) */}
+            <h2 
+              style={{ 
+                fontFamily: '"times new roman", times, serif', 
+                fontSize: '30px', 
+                lineHeight: '33px', 
+                fontWeight: '700',
+                color: 'rgb(191, 167, 145)',
+                fontStyle: 'italic'
+              }}
+              className="text-left tracking-normal mb-6"
+            >
               <span
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
                 className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
                 onBlur={(e) => handleEditableBlur('homeHeroMainHeading', e.currentTarget.innerText)}
               >
-                {getHomeValue('homeHeroMainHeading', 'You don\'t have to figure it out completely alone.')}
+                {getHomeValue('homeHeroMainHeading', "You don't have to figure it out alone.")}
               </span>
             </h2>
-            <div className="font-sans text-[14px] md:text-[15px] tracking-normal leading-relaxed space-y-4 font-light text-[#bfa791]/90">
+
+            {/* 4. Body Paragraphs */}
+            <div 
+              style={{ 
+                fontFamily: '"times new roman", times, serif', 
+                fontSize: '18px', 
+                lineHeight: '27px', 
+                fontWeight: '400',
+                color: 'rgb(191, 167, 145)'
+              }}
+              className="space-y-6 text-left tracking-normal"
+            >
               <p>
                 <span
                   contentEditable={inlineEditMode}
@@ -106,17 +164,17 @@ export default function Home({ inlineEditMode = false, externalState = null, set
                   className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
                   onBlur={(e) => handleEditableBlur('homeHeroP1', e.currentTarget.innerText)}
                 >
-                  {getHomeValue('homeHeroP1', 'Parenting can feel overwhelming when you\'re constantly trying to decode your child\'s behavior, navigate heavy emotional transitions, and figure out what actually works long-term. Some days feel beautifully calm... and other days feel like survival.')}
+                  {getHomeValue('homeHeroP1', "Parenting can feel overwhelming when you're constantly trying to decode your child's behavior, navigate heavy emotional transitions, and figure out what actually works long-term. Some days feel beautifully calm... and other days feel like survival.")}
                 </span>
               </p>
-              <p className="font-serif italic text-lg text-[#a38c77] pt-2">
+              <p>
                 <span
                   contentEditable={inlineEditMode}
                   suppressContentEditableWarning={inlineEditMode}
                   className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
                   onBlur={(e) => handleEditableBlur('homeHeroP2', e.currentTarget.innerText)}
                 >
-                  {getHomeValue('homeHeroP2', 'You are not failing. You just need the right framework.')}
+                  {getHomeValue('homeHeroP2', 'You are not failing. You just need the right support.')}
                 </span>
               </p>
             </div>
@@ -125,21 +183,52 @@ export default function Home({ inlineEditMode = false, externalState = null, set
         </div>
       </section>
 
-      <section className="w-full bg-[#efe9e4]/40 border-y border-[#bfa791]/10">
-        <div className="max-w-4xl mx-auto px-6 py-24 text-center">
-          <span className="text-xs uppercase tracking-[0.3em] text-[#a38c77]/70 font-medium block mb-3">— THE REALITY —</span>
-          <h2 className="font-serif text-3xl md:text-4xl tracking-wide text-[#a38c77] mb-12 font-light">
-            <span
-              contentEditable={inlineEditMode}
-              suppressContentEditableWarning={inlineEditMode}
-              className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-              onBlur={(e) => handleEditableBlur('homeRealityHeading', e.currentTarget.innerText)}
-            >
-              {getHomeValue('homeRealityHeading', 'Does your home feel more chaotic than connected?')}
-            </span>
-          </h2>
+      {/* =========================================================================
+          2. THE REALITY SECTION (WIX TYPOGRAPHY & COMPACT VIEWPORT RATIO MATCH)
+          ========================================================================= */}
+      <section 
+        style={{ backgroundColor: 'rgb(239, 233, 228)' }} 
+        className="w-full py-16 md:py-20 subpixel-antialiased"
+      >
+        <div className="max-w-4xl mx-auto px-6 text-center">
           
-          <div className="max-w-2xl mx-auto font-sans text-[14px] md:text-[15px] space-y-6 leading-relaxed font-light text-[#bfa791]/90">
+          {/* 2. Heading Container with Balanced Horizontal Rules */}
+          <div className="flex items-center justify-center gap-6 mb-8 select-none">
+            <div className="w-16 h-[1px]" style={{ backgroundColor: 'rgb(191, 167, 145)' }}></div>
+            <h2 
+              style={{ 
+                fontFamily: '"times new roman", times, serif', 
+                fontSize: '56px', 
+                lineHeight: '56px', 
+                fontWeight: '400',
+                color: 'rgb(191, 167, 145)'
+              }}
+              className="tracking-normal uppercase"
+            >
+              <span
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
+                onBlur={(e) => handleEditableBlur('homeRealityHeading', e.currentTarget.innerText)}
+              >
+                {getHomeValue('homeRealityHeading', 'SOUNDS FAMILIAR?')}
+              </span>
+            </h2>
+            <div className="w-16 h-[1px]" style={{ backgroundColor: 'rgb(191, 167, 145)' }}></div>
+          </div>
+          
+          {/* Core Content Flow: Tightened, unified vertical flow matching Wix footprint */}
+          <div 
+            style={{ 
+              fontFamily: '"times new roman", times, serif', 
+              fontSize: '18px', 
+              lineHeight: '27px', 
+              fontWeight: '400',
+              color: 'rgb(191, 167, 145)'
+            }}
+            className="max-w-2xl mx-auto space-y-5 text-center tracking-normal"
+          >
+            {/* 3. Main Body Text Block */}
             <p>
               <span
                 contentEditable={inlineEditMode}
@@ -147,56 +236,56 @@ export default function Home({ inlineEditMode = false, externalState = null, set
                 className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
                 onBlur={(e) => handleEditableBlur('homeRealityP1', e.currentTarget.innerText)}
               >
-                {getHomeValue('homeRealityP1', 'You try to handle things with patience, but then exhaustion takes over. The reaction happens, followed immediately by that heavy cloud of parental guilt, promising yourself that tomorrow will be different.')}
+                {getHomeValue('homeRealityP1', 'You’re doing your best to be a good parent... but sometimes you still find yourself reacting in ways you didn’t. The guilt comes after, and you promise yourself “tomorrow I’ll handle it better”... yet the same patterns keep showing up, and it leaves you feeling drained.')}
               </span>
             </p>
             
-            <div className="my-10 p-8 bg-white border border-[#bfa791]/15 rounded-xs space-y-4 shadow-2xs">
-              <p className="font-serif italic text-xl text-[#a38c77] tracking-wide">
+            <p>
+              <span
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
+                onBlur={(e) => handleEditableBlur('homeQuotation', e.currentTarget.innerText)}
+              >
+                {getHomeValue('homeQuotation', 'Some days it feels like your mind won’t switch off...')}
+              </span>
+            </p>
+
+            {/* 4. Emphasized Internal Monologue Questions Block */}
+            <div className="space-y-2">
+              <p style={{ fontWeight: '700', fontStyle: 'italic' }}>
                 <span
                   contentEditable={inlineEditMode}
                   suppressContentEditableWarning={inlineEditMode}
                   className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-                  onBlur={(e) => handleEditableBlur('homeQuotation', e.currentTarget.innerText)}
+                  onBlur={(e) => handleEditableBlur('homeQuotationQ1', e.currentTarget.innerText)}
                 >
-                  {getHomeValue('homeQuotation', '"Some days it feels like your mind won\'t switch off..."')}
+                  {getHomeValue('homeQuotationQ1', '“Why isn’t my child listening?”')}
                 </span>
               </p>
-              <div className="w-8 h-[1px] bg-[#bfa791]/30 mx-auto"></div>
-              <div className="font-serif italic text-base md:text-lg space-y-1.5 opacity-80 text-[#bfa791]">
-                <p>
-                  <span
-                    contentEditable={inlineEditMode}
-                    suppressContentEditableWarning={inlineEditMode}
-                    className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-                    onBlur={(e) => handleEditableBlur('homeQuotationQ1', e.currentTarget.innerText)}
-                  >
-                    {getHomeValue('homeQuotationQ1', '"Why isn\'t my child listening to me?"')}
-                  </span>
-                </p>
-                <p>
-                  <span
-                    contentEditable={inlineEditMode}
-                    suppressContentEditableWarning={inlineEditMode}
-                    className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-                    onBlur={(e) => handleEditableBlur('homeQuotationQ2', e.currentTarget.innerText)}
-                  >
-                    {getHomeValue('homeQuotationQ2', '"Why did I lose my temper like that again?"')}
-                  </span>
-                </p>
-                <p>
-                  <span
-                    contentEditable={inlineEditMode}
-                    suppressContentEditableWarning={inlineEditMode}
-                    className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-                    onBlur={(e) => handleEditableBlur('homeQuotationQ3', e.currentTarget.innerText)}
-                  >
-                    {getHomeValue('homeQuotationQ3', '"Am I missing something critical?"')}
-                  </span>
-                </p>
-              </div>
+              <p style={{ fontWeight: '700', fontStyle: 'italic' }}>
+                <span
+                  contentEditable={inlineEditMode}
+                  suppressContentEditableWarning={inlineEditMode}
+                  className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
+                  onBlur={(e) => handleEditableBlur('homeQuotationQ2', e.currentTarget.innerText)}
+                >
+                  {getHomeValue('homeQuotationQ2', '“Why did I react like that again?”')}
+                </span>
+              </p>
+              <p style={{ fontWeight: '700', fontStyle: 'italic' }}>
+                <span
+                  contentEditable={inlineEditMode}
+                  suppressContentEditableWarning={inlineEditMode}
+                  className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
+                  onBlur={(e) => handleEditableBlur('homeQuotationQ3', e.currentTarget.innerText)}
+                >
+                  {getHomeValue('homeQuotationQ3', '“What am I doing wrong?”')}
+                </span>
+              </p>
             </div>
 
+            {/* 5. Closing Statements Block */}
             <p>
               <span
                 contentEditable={inlineEditMode}
@@ -204,174 +293,314 @@ export default function Home({ inlineEditMode = false, externalState = null, set
                 className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
                 onBlur={(e) => handleEditableBlur('homeRealityP2', e.currentTarget.innerText)}
               >
-                {getHomeValue('homeRealityP2', 'You want deep closeness... but instead find yourself caught in continuous, exhausting power struggles. It leaves you wondering if this stress cycle is just what modern parenting has to look like.')}
+                {getHomeValue('homeRealityP2', 'You want closeness and connection... but it often turns into conflict instead. You want calm in your home... but everything feels overwhelming in the moment. And quietly... you’re beginning to wonder if this cycle is just how parenting is going to be.')}
               </span>
             </p>
           </div>
+
         </div>
       </section>
-
-      <section className="w-full bg-white relative">
-        <div className="absolute inset-0 opacity-10 bg-no-repeat bg-center" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43 0c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 86c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm28-65c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm23-11c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM80 80c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM9 16c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm65 45c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zM27 70c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1z' fill='%23634032' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")` }}></div>
-        <div className="max-w-5xl mx-auto px-6 py-24 z-10">
-          <div className="text-center max-w-xl mx-auto mb-16">
-            <span className="text-xs uppercase tracking-[0.3em] text-[#a38c77]/70 font-medium block mb-3">— THE VISION —</span>
-            <h2 className="font-serif text-3xl md:text-4xl tracking-wide text-[#a38c77] font-light">
+      {/* =========================================================================
+          3. THE VISION SECTION (EXACT LINE-BREAK & EDITORIAL FOOTPRINT MATCH)
+          ========================================================================= */}
+      <section className="w-full bg-white py-16 md:py-20 subpixel-antialiased">
+        <div className="max-w-4xl mx-auto px-6">
+          
+          {/* Balanced Header Row flaked with minimalist rules */}
+          <div className="flex items-center justify-center gap-6 mb-12 select-none">
+            <div className="w-16 h-[1px]" style={{ backgroundColor: 'rgb(191, 167, 145)' }}></div>
+            <h2 
+              style={{ 
+                fontFamily: '"times new roman", times, serif', 
+                fontSize: '56px', 
+                lineHeight: '56px', 
+                fontWeight: '400',
+                color: 'rgb(191, 167, 145)'
+              }}
+              className="tracking-normal uppercase text-center"
+            >
               <span
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
                 className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
                 onBlur={(e) => handleEditableBlur('homeVisionHeading', e.currentTarget.innerText)}
               >
-                {getHomeValue('homeVisionHeading', 'Imagine shifting from survival to connection')}
+                {getHomeValue('homeVisionHeading', 'IMAGINE THIS INSTEAD')}
               </span>
             </h2>
+            <div className="w-16 h-[1px]" style={{ backgroundColor: 'rgb(191, 167, 145)' }}></div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {/* Core Content Layout Column - space-y-8 manages the clean empty lines between blocks */}
+          <div className="max-w-2xl mx-auto space-y-8 text-left">
             {[
               { 
-                title: getHomeValue('homeCard1Title', 'Grounded & Prepared Days'), 
-                desc: getHomeValue('homeCard1Desc', 'Even when your child faces intense emotions or resists transitions, you can pause, read the root cause, and choose a steady response instead of a reactive shortcut.'),
-                titleKey: 'homeCard1Title',
-                descKey: 'homeCard1Desc'
+                titleKey: 'homeCard1Title', 
+                descKey: 'homeCard1Desc',
+                defaultTitle: 'You wake up feeling more grounded and prepared for the day ahead…',
+                defaultDesc: 'Even when your child has big emotions or resists instructions, you’re able to pause, understand what’s really going on, and respond with calm instead of frustration.'
               },
               { 
-                title: getHomeValue('homeCard2Title', 'Reduced Friction & Struggles'), 
-                desc: getHomeValue('homeCard2Desc', 'Your home structure starts to settle into a lighter, predictable, and cooperative rhythm built on functional respect rather than loud authority.'),
-                titleKey: 'homeCard2Title',
-                descKey: 'homeCard2Desc'
+                titleKey: 'homeCard2Title', 
+                descKey: 'homeCard2Desc',
+                defaultTitle: 'The constant power struggles start to reduce…',
+                defaultDesc: 'Your home feels lighter, more predictable, and more connected.'
               },
               { 
-                title: getHomeValue('homeCard3Title', 'Decode the Behavior Pattern'), 
-                desc: getHomeValue('homeCard3Desc', 'Instead of feeling blindsided or confused by sudden defiance, you can read exactly what your child\'s behavior is communicating.'),
-                titleKey: 'homeCard3Title',
-                descKey: 'homeCard3Desc'
+                titleKey: 'homeCard3Title', 
+                descKey: 'homeCard3Desc',
+                defaultTitle: 'You begin to understand your child’s behavior instead of feeling confused by it…',
+                defaultDesc: 'and instead of second-guessing yourself, you start to trust your responses.'
               },
               { 
-                title: getHomeValue('homeCard4Title', 'Confidence replaces Overwhelm'), 
-                desc: getHomeValue('homeCard4Desc', 'The persistent second-guessing fades out because you finally hold a reliable toolkit that fits into your actual lifestyle.'),
-                titleKey: 'homeCard4Title',
-                descKey: 'homeCard4Desc'
+                titleKey: 'homeCard4Title', 
+                descKey: 'homeCard4Desc',
+                defaultTitle: 'The guilt and overwhelm don’t define your days anymore…',
+                defaultDesc: 'because you finally have practical tools that actually work in real life.'
               }
             ].map((item, idx) => (
-              <div key={idx} className="p-6 border border-[#bfa791]/15 hover:border-[#bfa791]/40 rounded-sm transition-all duration-300 bg-[#efe9e4]/10 group">
-                <div className="w-8 h-8 rounded-full bg-[#efe9e4] flex items-center justify-center text-xs text-[#a38c77] mb-4 font-serif italic group-hover:bg-[#bfa791] group-hover:text-white transition-colors duration-300">
-                  0{idx + 1}
-                </div>
-                <h4 className="font-serif italic text-lg md:text-xl text-[#a38c77] font-normal mb-2 leading-snug">
+              <div key={idx} className="w-full">
+                {/* Line 1: Featured Key Points - Bold & Italic */}
+                <p 
+                  style={{ 
+                    fontFamily: '"times new roman", times, serif',
+                    fontSize: '18px',
+                    fontWeight: '700', 
+                    fontStyle: 'italic', 
+                    lineHeight: '25.2px',
+                    color: 'rgb(191, 167, 145)' 
+                  }}
+                  className="tracking-normal flex items-start"
+                >
+                  <span className="mr-2 select-none shrink-0">🤎</span>
                   <span
                     contentEditable={inlineEditMode}
                     suppressContentEditableWarning={inlineEditMode}
                     className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
                     onBlur={(e) => handleEditableBlur(item.titleKey, e.currentTarget.innerText)}
                   >
-                    {item.title}
+                    {getHomeValue(item.titleKey, item.defaultTitle)}
                   </span>
-                </h4>
-                <p className="font-sans text-[13px] md:text-[14px] text-[#bfa791]/80 font-light leading-relaxed">
+                </p>
+
+                {/* Line 2: Supporting Body Text - Drops to next line, aligned with text above */}
+                <p 
+                  style={{ 
+                    fontFamily: '"times new roman", times, serif', 
+                    fontSize: '18px',
+                    fontWeight: '400', 
+                    lineHeight: '27px', 
+                    color: 'rgb(191, 167, 145)' 
+                  }}
+                  className="tracking-normal pl-7 mt-1"
+                >
                   <span
                     contentEditable={inlineEditMode}
                     suppressContentEditableWarning={inlineEditMode}
                     className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
                     onBlur={(e) => handleEditableBlur(item.descKey, e.currentTarget.innerText)}
                   >
-                    {item.desc}
+                    {getHomeValue(item.descKey, item.defaultDesc)}
+                  </span>
+                </p>
+              </div>
+            ))}
+
+            {/* Closing Summary Text Block - Separated by an elegant top margin gap */}
+            <p 
+              style={{ 
+                fontFamily: '"times new roman", times, serif', 
+                fontSize: '18px', 
+                fontWeight: '700', 
+                lineHeight: '25.2px', 
+                color: 'rgb(191, 167, 145)' 
+              }}
+              className="text-center pt-8 tracking-normal"
+            >
+              <span
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
+                onBlur={(e) => handleEditableBlur('homeVisionSummary', e.currentTarget.innerText)}
+              >
+                {getHomeValue('homeVisionSummary', 'And slowly… parenting starts to feel less like survival, and more like connection.')}
+              </span>
+            </p>
+          </div>
+
+        </div>
+      </section>
+{/* =========================================================================
+          4. THE HELP YOU NEED SECTION (EXACT WIX PIXEL-PERFECT SPECIFICATION)
+          ========================================================================= */}
+      <section style={{ backgroundColor: 'rgb(239, 233, 228)' }} className="w-full py-20 md:py-24 subpixel-antialiased">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          
+          {/* Section Heading Row flaked with minimalist rules */}
+          <div className="flex items-center justify-center gap-6 mb-10 select-none">
+            <div className="w-16 h-[1px]" style={{ backgroundColor: 'rgb(191, 167, 145)' }}></div>
+            <h2 
+              style={{ 
+                fontFamily: '"times new roman", times, serif', 
+                fontSize: '56px', 
+                lineHeight: '56px', 
+                fontWeight: '400',
+                color: 'rgb(191, 167, 145)'
+              }}
+              className="tracking-normal uppercase text-center"
+            >
+              <span
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
+                onBlur={(e) => handleEditableBlur('homeHelpHeading', e.currentTarget.innerText)}
+              >
+                {getHomeValue('homeHelpHeading', 'THE HELP YOU NEED')}
+              </span>
+            </h2>
+            <div className="w-16 h-[1px]" style={{ backgroundColor: 'rgb(191, 167, 145)' }}></div>
+          </div>
+
+          {/* Sub-headings & Intro Statements */}
+          <div className="space-y-4 mb-10">
+            <p 
+              style={{ 
+                fontFamily: '"times new roman", times, serif', 
+                fontSize: '20px', 
+                fontWeight: '700', 
+                lineHeight: '28px',
+                color: 'rgb(191, 167, 145)' 
+              }}
+              className="italic tracking-normal text-center"
+            >
+              <span
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
+                onBlur={(e) => handleEditableBlur('homeHelpIntro1', e.currentTarget.innerText)}
+              >
+                {getHomeValue('homeHelpIntro1', 'Ready to feel more calm, confident, and in control as a parent?')}
+              </span>
+            </p>
+            <p 
+              style={{ 
+                fontFamily: '"times new roman", times, serif', 
+                fontSize: '20px', 
+                fontWeight: '700', 
+                lineHeight: '28px',
+                color: 'rgb(191, 167, 145)' 
+              }}
+              className="italic tracking-normal text-center"
+            >
+              <span
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
+                onBlur={(e) => handleEditableBlur('homeHelpIntro2', e.currentTarget.innerText)}
+              >
+                {getHomeValue('homeHelpIntro2', 'This is exactly what I help you do in the 1:1 parenting consultations')}
+              </span>
+            </p>
+          </div>
+
+          {/* "What you'll learn" Emphasis Subheading */}
+          <p 
+            style={{ 
+              fontFamily: '"times new roman", times, serif', 
+              fontSize: '20px', 
+              fontWeight: '700', 
+              lineHeight: '28px',
+              color: 'rgb(191, 167, 145)' 
+            }}
+            className="italic tracking-normal text-center mb-8"
+          >
+            <span
+              contentEditable={inlineEditMode}
+              suppressContentEditableWarning={inlineEditMode}
+              className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
+              onBlur={(e) => handleEditableBlur('homeHelpSubheading', e.currentTarget.innerText)}
+            >
+              {getHomeValue('homeHelpSubheading', "What you'll learn")}
+            </span>
+          </p>
+
+          {/* List Items Container with precise alignment & padded line layouts */}
+          <div className="max-w-2xl mx-auto text-left space-y-4 mb-12">
+            {[
+              { key: 'homeHelpTakeaway1', text: "Understanding your child’s behavior and emotional needs" },
+              { key: 'homeHelpTakeaway2', text: "Identifying what is really behind tantrums, defiance, or shutdowns" },
+              { key: 'homeHelpTakeaway3', text: "Practical strategies for responding instead of reacting" },
+              { key: 'homeHelpTakeaway4', text: "Positive discipline approaches that don’t rely on shouting or punishment" },
+              { key: 'homeHelpTakeaway5', text: "How to reduce daily stress and improve cooperation" },
+              { key: 'homeHelpTakeaway6', text: "Clear practical strategies tailored specifically to your situation" }
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-start tracking-normal">
+                <span className="mr-3 select-none shrink-0" style={{ fontSize: '18px' }}>🤎</span>
+                <p 
+                  style={{ 
+                    fontFamily: '"times new roman", times, serif', 
+                    fontSize: '18px',
+                    fontWeight: '400', 
+                    lineHeight: '28.8px', 
+                    color: 'rgb(191, 167, 145)' 
+                  }}
+                >
+                  <span
+                    contentEditable={inlineEditMode}
+                    suppressContentEditableWarning={inlineEditMode}
+                    className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
+                    onBlur={(e) => handleEditableBlur(item.key, e.currentTarget.innerText)}
+                  >
+                    {getHomeValue(item.key, item.text)}
                   </span>
                 </p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      <section className="w-full bg-[#efe9e4]/30 border-t border-[#bfa791]/10">
-        <div className="max-w-4xl mx-auto px-6 py-24 text-center">
-          <span className="text-xs uppercase tracking-[0.3em] text-[#a38c77]/70 font-medium block mb-3">— PROFESSIONAL SUPPORT —</span>
-          <h2 className="font-serif text-3xl md:text-4xl tracking-wide text-[#a38c77] mb-4 font-light">
+          {/* Closing Statement */}
+          <p 
+            style={{ 
+              fontFamily: '"times new roman", times, serif', 
+              fontSize: '18px', 
+              fontWeight: '400', 
+              lineHeight: '25.2px', 
+              color: 'rgb(191, 167, 145)' 
+            }}
+            className="max-w-2xl mx-auto tracking-normal mb-10 text-center"
+          >
             <span
               contentEditable={inlineEditMode}
               suppressContentEditableWarning={inlineEditMode}
               className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-              onBlur={(e) => handleEditableBlur('homeFrameworkHeading', e.currentTarget.innerText)}
+              onBlur={(e) => handleEditableBlur('homeHelpClosing', e.currentTarget.innerText)}
             >
-              {getHomeValue('homeFrameworkHeading', 'The 1:1 Consultation Architecture')}
-            </span>
-          </h2>
-          <p className="font-serif italic text-base md:text-lg text-[#bfa791]/80 max-w-xl mx-auto mb-16">
-            <span
-              contentEditable={inlineEditMode}
-              suppressContentEditableWarning={inlineEditMode}
-              className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-              onBlur={(e) => handleEditableBlur('homeFrameworkSubtitle', e.currentTarget.innerText)}
-            >
-              {getHomeValue('homeFrameworkSubtitle', 'A secure space to design custom approaches tailored completely to your child\'s emotional ecosystem.')}
+              {getHomeValue('homeHelpClosing', "Let’s work together to understand your child and create practical solutions that fit your real life.")}
             </span>
           </p>
 
-          <div className="max-w-xl mx-auto text-left grid grid-cols-1 gap-4 mb-16">
-            {[
-              { text: getHomeValue('homeTakeaway1', 'Deconstruct the root causes behind tantrums and shutdowns'), key: 'homeTakeaway1' },
-              { text: getHomeValue('homeTakeaway2', 'Practical communication anchors that scale down power struggles'), key: 'homeTakeaway2' },
-              { text: getHomeValue('homeTakeaway3', 'Positive discipline models that replace shouting with structure'), key: 'homeTakeaway3' },
-              { text: getHomeValue('homeTakeaway4', 'Tools to balance parental stress and handle triggers smoothly'), key: 'homeTakeaway4' }
-            ].map((item, idx) => (
-              <div key={idx} className="flex gap-4 items-center font-sans text-[14px] md:text-[15px] text-[#bfa791]/90 font-light p-3 bg-white border border-[#bfa791]/10 rounded-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#634032] shrink-0"></span>
-                <span
-                  contentEditable={inlineEditMode}
-                  suppressContentEditableWarning={inlineEditMode}
-                  className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-                  onBlur={(e) => handleEditableBlur(item.key, e.currentTarget.innerText)}
-                >
-                  {item.text}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="max-w-2xl mx-auto bg-white border border-[#bfa791]/20 rounded-xs p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 shadow-xs relative">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-[#634032]/10 rounded-bl-full pointer-events-none"></div>
-            
-            <div className="text-center md:text-left space-y-2 flex-1 relative z-10">
-              <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-[#a38c77]">
-                <span
-                  contentEditable={inlineEditMode}
-                  suppressContentEditableWarning={inlineEditMode}
-                  className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-                  onBlur={(e) => handleEditableBlur('homePanelLabel', e.currentTarget.innerText)}
-                >
-                  {getHomeValue('homePanelLabel', 'Private Client Advisory')}
-                </span>
-              </span>
-              <h3 className="font-serif text-2xl italic text-[#a38c77] font-light relative">
-                <span
-                  contentEditable={inlineEditMode}
-                  suppressContentEditableWarning={inlineEditMode}
-                  className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-                  onBlur={(e) => handleEditableBlur('homePanelTitle', e.currentTarget.innerText)}
-                >
-                  {getHomeValue('homePanelTitle', 'Personal Consultation Session')}
-                </span>
-                  <span className="absolute left-0 bottom-0 w-1/2 h-[1px] bg-[#634032]"></span>
-              </h3>
-              <p className="font-sans text-xs font-light text-[#bfa791]/80 leading-relaxed max-w-sm">
-                <span
-                  contentEditable={inlineEditMode}
-                  suppressContentEditableWarning={inlineEditMode}
-                  className={inlineEditMode ? 'bg-yellow-50/40 ring-1 ring-dashed ring-[#a38c77]/40 px-1 focus:outline-none' : ''}
-                  onBlur={(e) => handleEditableBlur('homePanelDescription', e.currentTarget.innerText)}
-                >
-                  {getHomeValue('homePanelDescription', 'A structured 60-minute evaluation session targeting your exact family dynamics.')}
-                </span>
-              </p>
-            </div>
-            
+          {/* Minimalist Square Button Match featuring crisp Avenir typography */}
+          <div className="flex justify-center items-center mt-6">
             <button 
               onClick={() => navigate('/book')} 
-              className="w-full md:w-auto bg-[#634032] text-[#efe9e4] px-8 py-3.5 font-serif italic text-base tracking-wide hover:bg-[#a38c77] rounded-xs transition-all duration-300 cursor-pointer shadow-xs whitespace-nowrap z-10"
+              style={{ 
+                fontFamily: 'avenir-lt-w01_35-light1475496, avenir-lt-w05_35-light, system-ui, sans-serif',
+                fontSize: '14px',
+                fontWeight: '400',
+                color: 'rgb(255, 255, 255)',
+                backgroundColor: 'rgb(191, 167, 145)',
+                letterSpacing: '0.1em'
+              }}
+              className="px-10 py-3.5 tracking-wider uppercase transition-all duration-300 hover:opacity-90 cursor-pointer rounded-none shadow-none border-none"
             >
-              Secure Your Session
+              <span
+                contentEditable={inlineEditMode}
+                suppressContentEditableWarning={inlineEditMode}
+                className={inlineEditMode ? 'bg-yellow-50/20 ring-1 ring-dashed ring-white/40 px-1 focus:outline-none' : ''}
+                onBlur={(e) => handleEditableBlur('homeHelpBtnText', e.currentTarget.innerText)}
+              >
+                {getHomeValue('homeHelpBtnText', 'Work With Me')}
+              </span>
             </button>
           </div>
 

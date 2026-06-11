@@ -18,10 +18,13 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // UPDATED: Replaced '/book' with '/consultation' to accurately track the new dropdown route
+  const isDropdownActive = ['/about', '/consultation', '/contact'].includes(location.pathname);
+
   return (
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b 
       ${isScrolled 
-        ? 'bg-white/80 backdrop-blur-md border-[#bfa791]/15 py-4 shadow-2xs' 
+        ? 'bg-white/90 backdrop-blur-md border-[#bfa791]/15 py-4 shadow-2xs' 
         : 'bg-white/0 border-transparent py-6'
       }`}
     >
@@ -35,33 +38,83 @@ export default function Navbar() {
           Zainab A. Ahmed
         </Link>
 
-        {/* Clean Link Cluster */}
-        <div className="flex items-center gap-8 text-xs font-medium uppercase tracking-[0.15em]">
+        {/* Clean Editorial Navigation Cluster */}
+        <div className="flex items-center gap-8 text-[14px] tracking-wide font-sans">
+          
+          {/* Home Nav Item */}
           <Link 
             to="/" 
             className={`transition-colors duration-200 relative py-1
               ${location.pathname === '/' 
-                ? 'text-[#634032]' 
+                ? 'text-[#634032] font-normal' 
                 : 'text-[#bfa791] hover:text-[#634032]'
               }`}
           >
             Home
-            {location.pathname === '/' && (
-              <span className="absolute bottom-0 left-0 w-full h-[1px] bg-[#634032]"></span>
-            )}
           </Link>
 
-          {/* Premium Call to Action Nav Anchor */}
-          <Link 
-            to="/book" 
-            className={`px-5 py-2.5 rounded-xs font-serif italic text-sm tracking-wide transition-all duration-300 border
-              ${location.pathname === '/book'
-                ? 'bg-[#634032] text-[#efe9e4] border-[#634032]'
-                : 'border-[#634032] text-[#634032] bg-transparent hover:bg-[#634032] hover:text-[#efe9e4]'
-              }`}
-          >
-            Book Session
-          </Link>
+          {/* "More" Hover Dropdown Container */}
+          <div className="relative group py-1">
+            <span 
+              className={`transition-colors duration-200 flex items-center gap-1 cursor-pointer select-none
+                ${isDropdownActive 
+                  ? 'text-[#634032] font-normal' 
+                  : 'text-[#bfa791] hover:text-[#634032]'
+                }`}
+            >
+              More
+              <svg 
+                className="w-3 h-3 opacity-60 transition-transform duration-200 group-hover:rotate-180" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+
+            {/* Dropdown Menu Panel */}
+            <div className="absolute right-0 top-full pt-3 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out z-50">
+              <div className="bg-white border border-[#bfa791]/20 shadow-xs py-1.5 flex flex-col text-left rounded-xs">
+                
+                <Link 
+                  to="/about" 
+                  className={`px-4 py-2.5 text-[13px] transition-colors duration-150
+                    ${location.pathname === '/about' 
+                      ? 'bg-[#efe9e4]/50 text-[#634032] font-medium' 
+                      : 'text-[#bfa791] hover:bg-[#efe9e4]/30 hover:text-[#634032]'
+                    }`}
+                >
+                  About Me
+                </Link>
+
+                {/* UPDATED: Path destination and active check switched over to /consultation */}
+                <Link 
+                  to="/consultation" 
+                  className={`px-4 py-2.5 text-[13px] transition-colors duration-150
+                    ${location.pathname === '/consultation' 
+                      ? 'bg-[#efe9e4]/50 text-[#634032] font-medium' 
+                      : 'text-[#bfa791] hover:bg-[#efe9e4]/30 hover:text-[#634032]'
+                    }`}
+                >
+                  Parenting Consultation
+                </Link>
+
+                <Link 
+                  to="/contact" 
+                  className={`px-4 py-2.5 text-[13px] transition-colors duration-150
+                    ${location.pathname === '/contact' 
+                      ? 'bg-[#efe9e4]/50 text-[#634032] font-medium' 
+                      : 'text-[#bfa791] hover:bg-[#efe9e4]/30 hover:text-[#634032]'
+                    }`}
+                >
+                  Contact
+                </Link>
+
+              </div>
+            </div>
+
+          </div>
         </div>
 
       </div>
