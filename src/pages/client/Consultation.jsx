@@ -7,16 +7,20 @@ import zeeImage from '../../assets/zee.jpeg';
 function useScrollFadeIn() {
   const elementRef = useRef(null);
 
-  useEffect(() => {
+ useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('opacity-100', 'translate-y-0');
+          // Removed the deep transition delays entirely from blocking scroll
           entry.target.classList.remove('opacity-0', 'translate-y-8');
           observer.unobserve(entry.target); 
         }
       },
-      { threshold: 0.05, rootMargin: '0px 0px -30px 0px' } 
+      { 
+        threshold: 0.01,         // FIXED: Trigger immediately when even 1% of the section enters
+        rootMargin: '0px 0px 50px 0px' // FIXED: Positive margin pre-renders animations 50px before entering screen viewport
+      } 
     );
 
     if (elementRef.current) {
