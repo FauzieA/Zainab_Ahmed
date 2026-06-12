@@ -68,7 +68,7 @@ export default function Resources({ liveContent }) {
                 </div>
 
                 {/* Clean Monospace Action Trigger */}
-                <div className="pt-2">
+                <div className="pt-0">
                   <a 
                     href={book.downloadUrl} 
                     target="_blank"

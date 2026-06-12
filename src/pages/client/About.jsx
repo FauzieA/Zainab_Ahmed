@@ -75,7 +75,7 @@ export default function About({ inlineEditMode = false, externalState = null, se
       {/* SECTION 1: BIO & MAIN PROFILE */}
       <section 
         style={{ backgroundColor: 'rgb(239, 233, 228)' }} 
-        className="text-[#bfa791] pt-28 pb-24 transition-colors duration-300"
+        className="text-[#bfa791] pt-36 md:pt-28 pb-24 transition-colors duration-300"
       >
         <div className="max-w-5xl mx-auto px-8 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-start">
           

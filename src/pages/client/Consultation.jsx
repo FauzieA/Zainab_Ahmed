@@ -71,12 +71,14 @@ export default function Consultation({ inlineEditMode = false, externalState = n
   };
 
   return (
-    <div className="min-h-screen bg-[#fff] font-serif antialiased text-[#bfa791] pt-24 selection:bg-[#efe9e4] selection:text-[#a38c77] overflow-x-hidden">
+    /* CHANGED: Changed pt-24 to pt-0 md:pt-24 so the entire wrapper wrapper does not push down on mobile */
+    <div className="min-h-screen bg-[#fff] font-serif antialiased text-[#bfa791] pt-0  selection:bg-[#efe9e4] selection:text-[#a38c77] overflow-x-hidden">
       
 {/* SECTION 1: HERO / INTRO OVERVIEW */}
       <section 
         ref={heroRef}
-        className="bg-[#efe9e4] py-20 px-6 md:px-12 opacity-0 translate-y-8 transition-all duration-1000 ease-out"
+        /* CHANGED: Changed py-20 to pt-12 pb-20 md:py-20 to trim the remaining top-heavy padding area on mobile screens */
+        className="bg-[#efe9e4] pt-12 pb-20 md:py-20 px-6 md:px-12 opacity-0 translate-y-8 transition-all duration-1000 ease-out"
       >
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
@@ -104,7 +106,7 @@ export default function Consultation({ inlineEditMode = false, externalState = n
                 </span>
                 <span
                   contentEditable={inlineEditMode}
-                  suppressContentWarning={inlineEditMode}
+                  suppressContentEditableWarning={inlineEditMode}
                   className={inlineEditMode ? 'bg-white/80 ring-1 ring-dashed ring-[#bfa791] px-1 block mt-2' : 'block mt-2'}
                   onBlur={(e) => handleEditableBlur('consultHeroLastName', e.currentTarget.innerText)}
                 >

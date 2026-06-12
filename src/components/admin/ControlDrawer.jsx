@@ -178,7 +178,7 @@ export default function ControlDrawer({
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       
       {/* PANEL 1: AUDIT COMBINED POOL SELECTION TIMELINES */}
       <div className="bg-white border border-[#bfa791]/20 p-6 rounded-sm shadow-2xs">
