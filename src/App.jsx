@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { CONFIG } from './config'; // Make sure this path points correctly to your config file
+
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/client/Home';
@@ -7,7 +9,7 @@ import Book from './pages/client/Booking';
 import About from './pages/client/About'; 
 import Contact from './pages/client/Contact';
 import Consultation from './pages/client/Consultation.jsx';
-import Resources from './pages/client/Resources'; // 1. IMPORT THE NEW RESOURCES PAGE
+import Resources from './pages/client/Resources'; 
 
 // New Administrative Dashboard View Layouts
 import AdminLogin from './pages/admin/AdminLogin';
@@ -15,7 +17,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import ProtectedRoute from './pages/admin/ProtectedRoute';
 
 // A small nested structural helper component to hide public headers inside admin layouts
-function MasterLayoutSwitcher() {
+function MasterLayoutSwitcher({ systemConfig }) {
   const location = useLocation();
   
   // Checks if the active URL window segment path begins with the /admin key
@@ -48,18 +50,16 @@ function MasterLayoutSwitcher() {
       {/* Added top padding helper to cleanly push content below the fixed header layout */}
       <div className="flex-1 pt-16">
         <Routes>
-          <Route path="/" element={<Home />} />
+          {/* We pass systemConfig data as liveContent to keep the public ecosystem entirely dynamic */}
+          <Route path="/" element={<Home liveContent={systemConfig} />} />
+          <Route path="/book" element={<Book liveContent={systemConfig} />} />
+          <Route path="/consultation" element={<Consultation liveContent={systemConfig} />} />
           
-          {/* Keep /book intact so the buttons on the consultation page can redirect here seamlessly */}
-          <Route path="/book" element={<Book />} />
+          {/* 👑 CRITICAL MATCH LINK: Feeds the custom book rows straight into the parser */}
+          <Route path="/resources" element={<Resources liveContent={systemConfig} />} />
           
-          <Route path="/consultation" element={<Consultation />} />
-          
-          {/* 2. ADD THE NEW RESOURCES ROUTE MATCHING THE NAVBAR */}
-          <Route path="/resources" element={<Resources />} />
-          
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About liveContent={systemConfig} />} />
+          <Route path="/contact" element={<Contact liveContent={systemConfig} />} />
          </Routes>
       </div>
 
@@ -69,9 +69,25 @@ function MasterLayoutSwitcher() {
 }
 
 function App() {
+  const [systemConfig, setSystemConfig] = useState(null);
+
+  // Synchronize database records on page load
+  useEffect(() => {
+    const baseUrl = CONFIG.API_BASE_URL.replace(/\/$/, "");
+    fetch(`${baseUrl}/meta/`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to sync layout context parameters.");
+        return res.json();
+      })
+      .then((data) => {
+        setSystemConfig(data);
+      })
+      .catch((err) => console.error("Database settings sync unfulfilled:", err));
+  }, []);
+
   return (
     <BrowserRouter>
-      <MasterLayoutSwitcher />
+      <MasterLayoutSwitcher systemConfig={systemConfig} />
     </BrowserRouter>
   );
 }
