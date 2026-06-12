@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 export default function Navbar() {
   const location = useLocation();
+  const dropdownRef = useRef(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Monitors page scrolling to add an elegant background blur when moving down
   useEffect(() => {
@@ -18,12 +20,27 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // UPDATED: Added '/resources' to accurately track the library route structure
+  // Close dropdown if clicking outside of the navigation panel
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Automatically close the menu panel whenever the active route path changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
+
   const isDropdownActive = ['/about', '/consultation', '/resources', '/contact'].includes(location.pathname);
 
   return (
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b 
-      ${isScrolled 
+      ${isScrolled || isMobileMenuOpen
         ? 'bg-white/90 backdrop-blur-md border-[#bfa791]/15 py-4 shadow-2xs' 
         : 'bg-white/0 border-transparent py-6'
       }`}
@@ -39,7 +56,7 @@ export default function Navbar() {
         </Link>
 
         {/* Clean Editorial Navigation Cluster */}
-        <div className="flex items-center gap-8 text-[14px] tracking-wide font-sans">
+        <div ref={dropdownRef} className="flex items-center gap-8 text-[14px] tracking-wide font-sans">
           
           {/* Home Nav Item */}
           <Link 
@@ -53,10 +70,12 @@ export default function Navbar() {
             Home
           </Link>
 
-          {/* "More" Hover Dropdown Container */}
-          <div className="relative group py-1">
-            <span 
-              className={`transition-colors duration-200 flex items-center gap-1 cursor-pointer select-none
+          {/* "More" Click & Hover Dropdown Container */}
+          <div className="relative py-1 group">
+            <button 
+              type="button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={`transition-colors duration-200 flex items-center gap-1 cursor-pointer select-none bg-transparent border-none p-0 text-[14px] tracking-wide font-sans outline-none
                 ${isDropdownActive 
                   ? 'text-[#634032] font-normal' 
                   : 'text-[#bfa791] hover:text-[#634032]'
@@ -64,17 +83,24 @@ export default function Navbar() {
             >
               More
               <svg 
-                className="w-3 h-3 opacity-60 transition-transform duration-200 group-hover:rotate-180" 
+                className={`w-3 h-3 opacity-60 transition-transform duration-200 ${
+                  isMobileMenuOpen ? 'rotate-180' : 'group-hover:rotate-180'
+                }`}
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
               </svg>
-            </span>
+            </button>
 
-            {/* Dropdown Menu Panel */}
-            <div className="absolute right-0 top-full pt-3 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out z-50">
+            {/* Dropdown Menu Panel (Combines Hover on Desktop + State Toggle on Mobile) */}
+            <div className={`absolute right-0 top-full pt-3 w-56 transition-all duration-200 ease-out z-50
+              ${isMobileMenuOpen 
+                ? 'opacity-100 visible' 
+                : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'
+              }`}
+            >
               <div className="bg-white border border-[#bfa791]/20 shadow-xs py-1.5 flex flex-col text-left rounded-xs">
                 
                 <Link 
@@ -88,7 +114,6 @@ export default function Navbar() {
                   About Me
                 </Link>
 
-                {/* UPDATED: Path destination and active check switched over to /consultation */}
                 <Link 
                   to="/consultation" 
                   className={`px-4 py-2.5 text-[13px] transition-colors duration-150
@@ -100,7 +125,6 @@ export default function Navbar() {
                   Parenting Consultation
                 </Link>
 
-                {/* ADDED: Resources editorial link route layout option */}
                 <Link 
                   to="/resources" 
                   className={`px-4 py-2.5 text-[13px] transition-colors duration-150
