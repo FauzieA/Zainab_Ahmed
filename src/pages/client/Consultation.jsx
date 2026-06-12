@@ -7,19 +7,18 @@ import zeeImage from '../../assets/zee.jpeg';
 function useScrollFadeIn() {
   const elementRef = useRef(null);
 
- useEffect(() => {
+  useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('opacity-100', 'translate-y-0');
-          // Removed the deep transition delays entirely from blocking scroll
           entry.target.classList.remove('opacity-0', 'translate-y-8');
           observer.unobserve(entry.target); 
         }
       },
       { 
-        threshold: 0.01,         // FIXED: Trigger immediately when even 1% of the section enters
-        rootMargin: '0px 0px 50px 0px' // FIXED: Positive margin pre-renders animations 50px before entering screen viewport
+        threshold: 0.01,         
+        rootMargin: '0px 0px 50px 0px' 
       } 
     );
 
@@ -75,19 +74,17 @@ export default function Consultation({ inlineEditMode = false, externalState = n
   };
 
   return (
-    /* CHANGED: Changed pt-24 to pt-0 md:pt-24 so the entire wrapper wrapper does not push down on mobile */
-    <div className="min-h-screen bg-[#fff] font-serif antialiased text-[#bfa791] pt-0  selection:bg-[#efe9e4] selection:text-[#a38c77] overflow-x-hidden">
+    <div className="min-h-screen bg-[#fff] font-serif antialiased text-[#bfa791] pt-0 selection:bg-[#efe9e4] selection:text-[#a38c77] overflow-x-hidden">
       
-{/* SECTION 1: HERO / INTRO OVERVIEW */}
+      {/* SECTION 1: HERO / INTRO OVERVIEW */}
+      {/* FIXED: Changed to transition-[opacity,transform] and reduced duration to 500ms on mobile */}
       <section 
         ref={heroRef}
-        /* CHANGED: Changed py-20 to pt-12 pb-20 md:py-20 to trim the remaining top-heavy padding area on mobile screens */
-        className="bg-[#efe9e4] pt-12 pb-20 md:py-20 px-6 md:px-12 opacity-0 translate-y-8 transition-all duration-1000 ease-out"
+        className="bg-[#efe9e4] pt-12 pb-20 md:py-20 px-6 md:px-12 opacity-0 translate-y-8 transition-[opacity,transform] duration-500 md:duration-700 ease-out will-change-transform"
       >
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
             
-            {/* Left Column: Stacked Title Left-Aligned Directly Above Your Imported Image */}
             <div className="md:col-span-5 flex flex-col items-center md:items-start text-center md:text-left">
               <h1 
                 style={{ 
@@ -118,7 +115,6 @@ export default function Consultation({ inlineEditMode = false, externalState = n
                 </span>
               </h1>
 
-              {/* Portrait Frame - Utilizing your imported zeeImage variable */}
               <div className="w-full max-w-[360px] mt-10 aspect-[3/4] bg-[#fff] overflow-hidden border border-[#bfa791]/10 rounded-xs shadow-xs">
                 <img 
                   src={zeeImage} 
@@ -128,10 +124,7 @@ export default function Consultation({ inlineEditMode = false, externalState = n
               </div>
             </div>
 
-            {/* Right Column: Inline Typography Content Block */}
             <div className="md:col-span-7 flex flex-col items-center md:items-start text-left md:pt-48">
-              
-              {/* Section Heading */}
               <h2 
                 style={{
                   fontFamily: "Helvetica, 'w01-roman', sans-serif",
@@ -151,7 +144,6 @@ export default function Consultation({ inlineEditMode = false, externalState = n
                 </span>
               </h2>
               
-              {/* Body Paragraphs block */}
               <div 
                 style={{
                   fontFamily: "'Times New Roman', times, serif",
@@ -188,7 +180,6 @@ export default function Consultation({ inlineEditMode = false, externalState = n
                 </p>
               </div>
 
-              {/* Call to Action Button */}
               <div className="mt-10 w-full flex justify-center md:justify-start">
                 <Link 
                   to="/book"
@@ -212,13 +203,13 @@ export default function Consultation({ inlineEditMode = false, externalState = n
       </section>
 
       {/* SECTION 2: THE CYCLE SEGMENT */}
+      {/* FIXED: Swapped transition mechanics to optimized transform targets */}
       <section 
         ref={cycleRef}
-        className="bg-white py-24 px-6 text-center opacity-0 translate-y-8 transition-all duration-1000 ease-out"
+        className="bg-white py-24 px-6 text-center opacity-0 translate-y-8 transition-[opacity,transform] duration-500 md:duration-700 ease-out will-change-transform"
       >
         <div className="max-w-3xl mx-auto space-y-8">
           
-          {/* Section Heading: THE CYCLE... */}
           <h2 
             style={{
               fontFamily: "Helvetica, 'w01-roman', sans-serif",
@@ -240,7 +231,6 @@ export default function Consultation({ inlineEditMode = false, externalState = n
             </span>
           </h2>
           
-          {/* Main Sequence & Secondary Text */}
           <div 
             style={{
               fontFamily: "'Times New Roman', times, serif",
@@ -269,7 +259,6 @@ export default function Consultation({ inlineEditMode = false, externalState = n
             </p>
           </div>
 
-          {/* Supporting Statement (No border/line) */}
           <div className="pt-6">
             <p
               style={{
@@ -291,13 +280,13 @@ export default function Consultation({ inlineEditMode = false, externalState = n
       </section>
 
      {/* SECTION 3: DEEP EXTENDED BIO */}
+     {/* FIXED: Shaved off visual execution frame delay on mobile viewports */}
       <section 
         ref={bioRef}
-        className="bg-[#efe9e4] py-12 px-6 md:px-12 opacity-0 translate-y-8 transition-all duration-[1100ms] ease-out"
+        className="bg-[#efe9e4] py-12 px-6 md:px-12 opacity-0 translate-y-8 transition-[opacity,transform] duration-500 md:duration-700 ease-out will-change-transform"
       >
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-28 items-start">
           
-          {/* Left Column: Stacked Title Left-Aligned Directly Above Managed Image Frame */}
           <div className="md:col-span-4 flex flex-col items-center md:items-start text-center md:text-left">
             <h2 
               style={{ 
@@ -330,7 +319,6 @@ export default function Consultation({ inlineEditMode = false, externalState = n
               </div>
             </h2>
 
-            {/* Slightly reduced max-width portrait layout frame to sit even with right content flow height */}
             <div className="w-full max-w-[300px] max-h-[350px] aspect-[3/4] bg-[#fff] overflow-hidden border border-[#bfa791]/10 rounded-xs shadow-xs">
               <img 
                 src={zeeImage} 
@@ -339,16 +327,13 @@ export default function Consultation({ inlineEditMode = false, externalState = n
               />
             </div>
 
-            {/* Bold and Italic Consultant Title - Placed Directly Underneath the Image Container */}
-            <p className="text-[12px] md:text-[15px]  text-[#bfa791] font-sans mt-5 italic font-bold w-full text-center md:text-left">
+            <p className="text-[12px] md:text-[15px] text-[#bfa791] font-sans mt-5 italic font-bold w-full text-center md:text-left">
               Parenting & Child Development Consultant
             </p>
           </div>
 
-          {/* Right Column: Expanded Width Text Layout Block */}
           <div className="md:col-span-7 flex flex-col items-center md:items-start text-left md:pt-36">
             
-            {/* Body Paragraphs - Swapped to global text-justify alignment */}
             <div 
               style={{
                 fontFamily: "'Times New Roman', times, serif",
@@ -406,14 +391,14 @@ export default function Consultation({ inlineEditMode = false, externalState = n
         </div>
       </section>
 
-{/* SECTION 4: THE STEP-BY-STEP PROCESS */}
+      {/* SECTION 4: THE STEP-BY-STEP PROCESS */}
+      {/* FIXED: Reduced layout transition frame rendering weight down to 500ms for active hardware threads */}
       <section 
         ref={processRef}
-        className="bg-white py-24 px-6 md:px-12 text-center opacity-0 translate-y-8 transition-all duration-[1200ms] ease-out"
+        className="bg-white py-24 px-6 md:px-12 text-center opacity-0 translate-y-8 transition-[opacity,transform] duration-500 md:duration-700 ease-out will-change-transform"
       >
         <div className="max-w-5xl mx-auto">
           
-          {/* Main Section Header */}
           <h2 
             style={{ 
               fontFamily: "'Times New Roman', times, serif",
@@ -431,10 +416,8 @@ export default function Consultation({ inlineEditMode = false, externalState = n
             </span>
           </h2>
 
-          {/* Clean Minimal Matrix Grid Layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-20 text-center items-start relative">
             
-            {/* Vertical Center Divider for Desktop Layouts */}
             <div className="hidden md:block absolute left-1/2 top-4 bottom-4 w-[1px] bg-[#efe9e4] transform -translate-x-1/2" />
 
             {/* Step 1 */}
@@ -559,7 +542,6 @@ export default function Consultation({ inlineEditMode = false, externalState = n
 
           </div>
 
-          {/* Call to Action Button */}
           <div className="mt-24">
             <Link 
               to="/book"
