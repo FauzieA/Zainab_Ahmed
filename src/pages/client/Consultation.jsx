@@ -1,9 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { CONFIG } from '../../config';
 import zeeImage from '../../assets/zee.jpeg';
+
+// Custom lightweight Intersection Observer wrapper hook for elegant scroll fading
+function useScrollFadeIn() {
+  const elementRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('opacity-100', 'translate-y-0');
+          entry.target.classList.remove('opacity-0', 'translate-y-8');
+          observer.unobserve(entry.target); 
+        }
+      },
+      { threshold: 0.05, rootMargin: '0px 0px -30px 0px' } 
+    );
+
+    if (elementRef.current) {
+      observer.observe(elementRef.current);
+    }
+
+    return () => {
+      if (elementRef.current) observer.disconnect();
+    };
+  }, []);
+
+  return elementRef;
+}
+
 export default function Consultation({ inlineEditMode = false, externalState = null, setExternalState = null }) {
   const [liveContent, setLiveContent] = useState(null);
+
+  // Initialize animation refs for each major section
+  const heroRef = useScrollFadeIn();
+  const cycleRef = useScrollFadeIn();
+  const bioRef = useScrollFadeIn();
+  const processRef = useScrollFadeIn();
 
   const handleEditableBlur = (key, newContent) => {
     if (setExternalState && externalState) {
@@ -36,10 +71,13 @@ export default function Consultation({ inlineEditMode = false, externalState = n
   };
 
   return (
-    <div className="min-h-screen bg-[#fff] font-serif antialiased text-[#bfa791] pt-24 selection:bg-[#efe9e4] selection:text-[#a38c77]">
+    <div className="min-h-screen bg-[#fff] font-serif antialiased text-[#bfa791] pt-24 selection:bg-[#efe9e4] selection:text-[#a38c77] overflow-x-hidden">
       
 {/* SECTION 1: HERO / INTRO OVERVIEW */}
-      <section className="bg-[#efe9e4] py-20 px-6 md:px-12 transition-all duration-300">
+      <section 
+        ref={heroRef}
+        className="bg-[#efe9e4] py-20 px-6 md:px-12 opacity-0 translate-y-8 transition-all duration-1000 ease-out"
+      >
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
             
@@ -168,7 +206,10 @@ export default function Consultation({ inlineEditMode = false, externalState = n
       </section>
 
       {/* SECTION 2: THE CYCLE SEGMENT */}
-      <section className="bg-white py-24 px-6 text-center">
+      <section 
+        ref={cycleRef}
+        className="bg-white py-24 px-6 text-center opacity-0 translate-y-8 transition-all duration-1000 ease-out"
+      >
         <div className="max-w-3xl mx-auto space-y-8">
           
           {/* Section Heading: THE CYCLE... */}
@@ -244,7 +285,10 @@ export default function Consultation({ inlineEditMode = false, externalState = n
       </section>
 
      {/* SECTION 3: DEEP EXTENDED BIO */}
-      <section className="bg-[#efe9e4] py-12 px-6 md:px-12 transition-all duration-300">
+      <section 
+        ref={bioRef}
+        className="bg-[#efe9e4] py-12 px-6 md:px-12 opacity-0 translate-y-8 transition-all duration-[1100ms] ease-out"
+      >
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-28 items-start">
           
           {/* Left Column: Stacked Title Left-Aligned Directly Above Managed Image Frame */}
@@ -357,7 +401,10 @@ export default function Consultation({ inlineEditMode = false, externalState = n
       </section>
 
 {/* SECTION 4: THE STEP-BY-STEP PROCESS */}
-      <section className="bg-white py-24 px-6 md:px-12 text-center transition-all duration-300">
+      <section 
+        ref={processRef}
+        className="bg-white py-24 px-6 md:px-12 text-center opacity-0 translate-y-8 transition-all duration-[1200ms] ease-out"
+      >
         <div className="max-w-5xl mx-auto">
           
           {/* Main Section Header */}
@@ -378,7 +425,7 @@ export default function Consultation({ inlineEditMode = false, externalState = n
             </span>
           </h2>
 
-          {/* Clean Minimal Matrix Grid Layout matching Screenshot 2026-06-12 at 9.25.52 AM.jpg */}
+          {/* Clean Minimal Matrix Grid Layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-20 text-center items-start relative">
             
             {/* Vertical Center Divider for Desktop Layouts */}

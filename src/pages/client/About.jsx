@@ -1,9 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CONFIG } from '../../config';
 import zeeImage from '../../assets/zee.jpeg';
 
+// Custom lightweight Intersection Observer wrapper hook for elegant scroll fading
+function useScrollFadeIn() {
+  const elementRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('opacity-100', 'translate-y-0');
+          entry.target.classList.remove('opacity-0', 'translate-y-8');
+          observer.unobserve(entry.target); // Stops tracking once animated in
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' } // Fires slightly before full entry
+    );
+
+    if (elementRef.current) {
+      observer.observe(elementRef.current);
+    }
+
+    return () => {
+      if (elementRef.current) observer.disconnect();
+    };
+  }, []);
+
+  return elementRef;
+}
+
 export default function About({ inlineEditMode = false, externalState = null, setExternalState = null }) {
   const [liveContent, setLiveContent] = useState(null);
+
+  // Hook assignments for distinct scroll animation triggers
+  const bioHeaderRef = useScrollFadeIn();
+  const bioFrameRef = useScrollFadeIn();
+  const bioRightTextRef = useScrollFadeIn();
+  const beyondSectionRef = useScrollFadeIn();
 
   const handleEditableBlur = (key, newContent) => {
     if (setExternalState && externalState) {
@@ -36,7 +70,7 @@ export default function About({ inlineEditMode = false, externalState = null, se
   };
 
   return (
-    <div className="min-h-screen font-serif antialiased selection:bg-[#bfa791]/10 selection:text-[#bfa791]">
+    <div className="min-h-screen font-serif antialiased selection:bg-[#bfa791]/10 selection:text-[#bfa791] overflow-x-hidden">
       
       {/* SECTION 1: BIO & MAIN PROFILE */}
       <section 
@@ -45,9 +79,14 @@ export default function About({ inlineEditMode = false, externalState = null, se
       >
         <div className="max-w-5xl mx-auto px-8 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-start">
           
-          {/* Left Column: Headings, Image and Subtitle Anchor */}
+          {/* Left Column: Headings, Image and Subtitle Anchor (Sticky Wrapper) */}
           <div className="md:col-span-5 space-y-6 md:sticky md:top-28">
-            <div className="space-y-1 text-left">
+            
+            {/* Headers Wrapper animated independently */}
+            <div 
+              ref={bioHeaderRef}
+              className="space-y-1 text-left opacity-0 translate-y-8 transition-all duration-1000 ease-out"
+            >
               <h1 className="text-[40px] leading-[48px] font-normal uppercase tracking-[0.05em] text-[#bfa791]">
                 <span
                   contentEditable={inlineEditMode}
@@ -70,31 +109,38 @@ export default function About({ inlineEditMode = false, externalState = null, se
               </h2>
             </div>
 
-            {/* Premium Image Frame */}
-            <div className="w-full aspect-[3/4] bg-white/40 border border-[#bfa791]/30 rounded-xs overflow-hidden shadow-2xs">
-              <img 
-                src={zeeImage}
-                alt="Zainab Ahmed" 
-                className="w-full h-full object-cover object-center grayscale-[10%] contrast-[102%]"
-              />
-            </div>
+            {/* Premium Image Frame and Label animated as a single unit */}
+            <div 
+              ref={bioFrameRef}
+              className="opacity-0 translate-y-8 transition-all duration-[1200ms] delay-100 ease-out"
+            >
+              <div className="w-full aspect-[3/4] bg-white/40 border border-[#bfa791]/30 rounded-xs overflow-hidden shadow-2xs">
+                <img 
+                  src={zeeImage}
+                  alt="Zainab Ahmed" 
+                  className="w-full h-full object-cover object-center grayscale-[10%] contrast-[102%] scale-102 hover:scale-100 transition-transform duration-700 ease-out"
+                />
+              </div>
 
-            {/* Centered Role Subtitle under the image */}
-            <p className="text-[18px] leading-[25.2px] font-bold italic text-[#bfa791] text-center tracking-wide pt-2">
-              <span
-                contentEditable={inlineEditMode}
-                suppressContentEditableWarning={inlineEditMode}
-                className={inlineEditMode ? 'bg-yellow-100/50 ring-1 ring-dashed ring-[#634032]/30 px-1 focus:outline-none' : ''}
-                onBlur={(e) => handleEditableBlur('aboutImgSubtitle', e.currentTarget.innerText)}
-              >
-                {getAboutValue('aboutImgSubtitle', 'Parenting & Child Development Consultant')}
-              </span>
-            </p>
+              <p className="text-[18px] leading-[25.2px] font-bold italic text-[#bfa791] text-center tracking-wide pt-4">
+                <span
+                  contentEditable={inlineEditMode}
+                  suppressContentEditableWarning={inlineEditMode}
+                  className={inlineEditMode ? 'bg-yellow-100/50 ring-1 ring-dashed ring-[#634032]/30 px-1 focus:outline-none' : ''}
+                  onBlur={(e) => handleEditableBlur('aboutImgSubtitle', e.currentTarget.innerText)}
+                >
+                  {getAboutValue('aboutImgSubtitle', 'Parenting & Child Development Consultant')}
+                </span>
+              </p>
+            </div>
           </div>
 
           {/* Right Column: Narrative Editorial Bio Elements */}
-          <div className="md:col-span-7 space-y-7 text-[18px] leading-[28.8px] font-normal text-[#bfa791] tracking-normal pt-4 md:pt-24">
-            <p>
+          <div 
+            ref={bioRightTextRef}
+            className="md:col-span-7 space-y-7 text-[18px] leading-[28.8px] font-normal text-[#bfa791] tracking-normal pt-4 md:pt-24 opacity-0 translate-y-8 transition-all duration-[1200ms] delay-200 ease-out"
+          >
+            <p className="transform hover:translate-x-0.5 transition-transform duration-300">
               <span
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
@@ -113,7 +159,7 @@ export default function About({ inlineEditMode = false, externalState = null, se
               </span>
             </p>
 
-            <p>
+            <p className="transform hover:translate-x-0.5 transition-transform duration-300">
               <span
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
@@ -124,7 +170,7 @@ export default function About({ inlineEditMode = false, externalState = null, se
               </span>
             </p>
 
-            <p>
+            <p className="transform hover:translate-x-0.5 transition-transform duration-300">
               <span
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
@@ -135,7 +181,7 @@ export default function About({ inlineEditMode = false, externalState = null, se
               </span>
             </p>
 
-            <p>
+            <p className="transform hover:translate-x-0.5 transition-transform duration-300">
               <span
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
@@ -153,9 +199,12 @@ export default function About({ inlineEditMode = false, externalState = null, se
       {/* SECTION 2: BEYOND WORK */}
       <section 
         style={{ backgroundColor: 'rgb(255, 255, 255)' }} 
-        className="text-[#bfa791] py-24 border-t border-[#bfa791]/10 transition-colors duration-300"
+        className="w-full text-[#bfa791] py-24 border-t border-[#bfa791]/10 transition-colors duration-300"
       >
-        <div className="max-w-3xl mx-auto px-8 text-center space-y-8">
+        <div 
+          ref={beyondSectionRef}
+          className="max-w-3xl mx-auto px-8 text-center space-y-8 opacity-0 translate-y-8 transition-all duration-[1000ms] ease-out"
+        >
           
           {/* Centered Heading with Tighter Letter Spacing */}
           <h2 

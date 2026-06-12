@@ -1,11 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CONFIG } from '../../config';
 import zeeImage from '../../assets/zee.jpeg';
 
+// Custom lightweight Intersection Observer wrapper hook for elegant scroll fading
+function useScrollFadeIn() {
+  const elementRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('opacity-100', 'translate-y-0');
+          entry.target.classList.remove('opacity-0', 'translate-y-8');
+          observer.unobserve(entry.target); // Stops tracking once animated in
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' } // Fires slightly before full entry
+    );
+
+    if (elementRef.current) {
+      observer.observe(elementRef.current);
+    }
+
+    return () => {
+      if (elementRef.current) observer.disconnect();
+    };
+  }, []);
+
+  return elementRef;
+}
+
 export default function Home({ inlineEditMode = false, externalState = null, setExternalState = null }) {
   const navigate = useNavigate();
   const [liveContent, setLiveContent] = useState(null);
+
+  // Hook assignments for distinct scroll animation triggers
+  const heroLeftRef = useScrollFadeIn();
+  const heroImgRef = useScrollFadeIn();
+  const heroRightRef = useScrollFadeIn();
+  const realitySectionRef = useScrollFadeIn();
+  const visionSectionRef = useScrollFadeIn();
+  const helpSectionRef = useScrollFadeIn();
 
   const handleEditableBlur = (key, newContent) => {
     if (setExternalState && externalState) {
@@ -26,7 +62,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
     }
   }, [inlineEditMode]);
 
-  // STRICT 3-TIER RESOLUTION CHAIN
   const getHomeValue = (key, defaultValue) => {
     if (inlineEditMode && externalState && externalState[key] !== undefined) {
       return externalState[key];
@@ -38,16 +73,19 @@ export default function Home({ inlineEditMode = false, externalState = null, set
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#bfa791] font-sans antialiased selection:bg-[#efe9e4] selection:text-[#a38c77]">
+    <div className="min-h-screen bg-white text-[#bfa791] font-sans antialiased selection:bg-[#efe9e4] selection:text-[#a38c77] overflow-x-hidden">
+      
       {/* =========================================================================
-          1. HERO HEADER SECTION (WIX TYPOGRAPHY MATRICES + PIXEL ALIGNMENT MATCH)
+          1. HERO HEADER SECTION
           ========================================================================= */}
       <section className="w-full bg-white pt-16 pb-24 subpixel-antialiased">
         <div className="max-w-6xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-x-12 lg:gap-x-20 items-start">
           
-          {/* ROW 1: Identity Branding Header Header Block */}
-          <div className="lg:col-span-6 flex flex-col items-center text-center mb-10 lg:mb-14">
-            {/* 1. Main Name (ZAINAB AHMED) */}
+          {/* ROW 1: Identity Branding Header Block */}
+          <div 
+            ref={heroLeftRef}
+            className="lg:col-span-6 flex flex-col items-center text-center mb-10 lg:mb-14 opacity-0 translate-y-8 transition-all duration-1000 ease-out"
+          >
             <h1 
               style={{ 
                 fontFamily: '"times new roman", times, serif', 
@@ -68,7 +106,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
               </span>
             </h1>
 
-            {/* 2. Professional Title */}
             <p 
               style={{ 
                 fontFamily: '"times new roman", times, serif', 
@@ -90,26 +127,28 @@ export default function Home({ inlineEditMode = false, externalState = null, set
             </p>
           </div>
 
-          {/* Desktop Right Spacer - Keeps layout aligned without breaking grid flow */}
           <div className="hidden lg:col-span-6 lg:block"></div>
 
-
-          {/* ROW 2: Media and Editorial Core Pitch (Guaranteed Top Alignment Match) */}
+          {/* ROW 2: Media and Editorial Core Pitch */}
           {/* Left Column: Profile Media Graphic */}
-          <div className="lg:col-span-6 flex flex-col items-center mb-12 lg:mb-0">
-            <div className="w-full max-w-[380px] aspect-[3/4] overflow-hidden">
+          <div 
+            ref={heroImgRef}
+            className="lg:col-span-6 flex flex-col items-center mb-12 lg:mb-0 opacity-0 translate-y-8 transition-all duration-[1200ms] ease-out"
+          >
+            <div className="w-full max-w-[380px] aspect-[3/4] overflow-hidden shadow-2xs">
               <img 
                 src={zeeImage}
                 alt="Zainab A. Ahmed" 
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-center scale-105 hover:scale-100 transition-transform duration-700 ease-out"
               />
             </div>
           </div>
 
-          {/* Right Column: Text Content starting precisely with top of image */}
-          <div className="lg:col-span-6 flex flex-col justify-start">
-            
-            {/* System Key Tag - Preserved & visible only when editing */}
+          {/* Right Column: Text Content */}
+          <div 
+            ref={heroRightRef}
+            className="lg:col-span-6 flex flex-col justify-start opacity-0 translate-y-8 transition-all duration-[1200ms] delay-150 ease-out"
+          >
             {inlineEditMode && (
               <div className="p-2 border border-dashed border-[#bfa791]/40 bg-yellow-50/20 rounded text-xs mb-4 font-sans">
                 <span className="text-[10px] font-mono text-[#a38c77] block mb-1">System Tag (Hidden in Production):</span>
@@ -124,7 +163,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
               </div>
             )}
 
-            {/* 3. Tagline (You don't have to figure it out alone) */}
             <h2 
               style={{ 
                 fontFamily: '"times new roman", times, serif', 
@@ -146,7 +184,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
               </span>
             </h2>
 
-            {/* 4. Body Paragraphs */}
             <div 
               style={{ 
                 fontFamily: '"times new roman", times, serif', 
@@ -184,15 +221,16 @@ export default function Home({ inlineEditMode = false, externalState = null, set
       </section>
 
       {/* =========================================================================
-          2. THE REALITY SECTION (WIX TYPOGRAPHY & COMPACT VIEWPORT RATIO MATCH)
+          2. THE REALITY SECTION
           ========================================================================= */}
       <section 
         style={{ backgroundColor: 'rgb(239, 233, 228)' }} 
         className="w-full py-16 md:py-20 subpixel-antialiased"
       >
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          
-          {/* 2. Heading Container with Balanced Horizontal Rules */}
+        <div 
+          ref={realitySectionRef}
+          className="max-w-4xl mx-auto px-6 text-center opacity-0 translate-y-8 transition-all duration-[1000ms] ease-out"
+        >
           <div className="flex items-center justify-center gap-6 mb-8 select-none">
             <div className="w-16 h-[1px]" style={{ backgroundColor: 'rgb(191, 167, 145)' }}></div>
             <h2 
@@ -217,7 +255,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
             <div className="w-16 h-[1px]" style={{ backgroundColor: 'rgb(191, 167, 145)' }}></div>
           </div>
           
-          {/* Core Content Flow: Tightened, unified vertical flow matching Wix footprint */}
           <div 
             style={{ 
               fontFamily: '"times new roman", times, serif', 
@@ -228,7 +265,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
             }}
             className="max-w-2xl mx-auto space-y-5 text-center tracking-normal"
           >
-            {/* 3. Main Body Text Block */}
             <p>
               <span
                 contentEditable={inlineEditMode}
@@ -251,7 +287,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
               </span>
             </p>
 
-            {/* 4. Emphasized Internal Monologue Questions Block */}
             <div className="space-y-2">
               <p style={{ fontWeight: '700', fontStyle: 'italic' }}>
                 <span
@@ -285,7 +320,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
               </p>
             </div>
 
-            {/* 5. Closing Statements Block */}
             <p>
               <span
                 contentEditable={inlineEditMode}
@@ -300,13 +334,15 @@ export default function Home({ inlineEditMode = false, externalState = null, set
 
         </div>
       </section>
+
       {/* =========================================================================
-          3. THE VISION SECTION (EXACT LINE-BREAK & EDITORIAL FOOTPRINT MATCH)
+          3. THE VISION SECTION
           ========================================================================= */}
       <section className="w-full bg-white py-16 md:py-20 subpixel-antialiased">
-        <div className="max-w-4xl mx-auto px-6">
-          
-          {/* Balanced Header Row flaked with minimalist rules */}
+        <div 
+          ref={visionSectionRef}
+          className="max-w-4xl mx-auto px-6 opacity-0 translate-y-8 transition-all duration-[1000ms] ease-out"
+        >
           <div className="flex items-center justify-center gap-6 mb-12 select-none">
             <div className="w-16 h-[1px]" style={{ backgroundColor: 'rgb(191, 167, 145)' }}></div>
             <h2 
@@ -331,7 +367,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
             <div className="w-16 h-[1px]" style={{ backgroundColor: 'rgb(191, 167, 145)' }}></div>
           </div>
           
-          {/* Core Content Layout Column - space-y-8 manages the clean empty lines between blocks */}
           <div className="max-w-2xl mx-auto space-y-8 text-left">
             {[
               { 
@@ -359,8 +394,7 @@ export default function Home({ inlineEditMode = false, externalState = null, set
                 defaultDesc: 'because you finally have practical tools that actually work in real life.'
               }
             ].map((item, idx) => (
-              <div key={idx} className="w-full">
-                {/* Line 1: Featured Key Points - Bold & Italic */}
+              <div key={idx} className="w-full transform hover:translate-x-1 transition-transform duration-300">
                 <p 
                   style={{ 
                     fontFamily: '"times new roman", times, serif',
@@ -383,7 +417,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
                   </span>
                 </p>
 
-                {/* Line 2: Supporting Body Text - Drops to next line, aligned with text above */}
                 <p 
                   style={{ 
                     fontFamily: '"times new roman", times, serif', 
@@ -406,7 +439,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
               </div>
             ))}
 
-            {/* Closing Summary Text Block - Separated by an elegant top margin gap */}
             <p 
               style={{ 
                 fontFamily: '"times new roman", times, serif', 
@@ -430,13 +462,15 @@ export default function Home({ inlineEditMode = false, externalState = null, set
 
         </div>
       </section>
-{/* =========================================================================
-          4. THE HELP YOU NEED SECTION (EXACT WIX PIXEL-PERFECT SPECIFICATION)
+
+      {/* =========================================================================
+          4. THE HELP YOU NEED SECTION
           ========================================================================= */}
       <section style={{ backgroundColor: 'rgb(239, 233, 228)' }} className="w-full py-20 md:py-24 subpixel-antialiased">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          
-          {/* Section Heading Row flaked with minimalist rules */}
+        <div 
+          ref={helpSectionRef}
+          className="max-w-4xl mx-auto px-6 text-center opacity-0 translate-y-8 transition-all duration-[1000ms] ease-out"
+        >
           <div className="flex items-center justify-center gap-6 mb-10 select-none">
             <div className="w-16 h-[1px]" style={{ backgroundColor: 'rgb(191, 167, 145)' }}></div>
             <h2 
@@ -461,7 +495,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
             <div className="w-16 h-[1px]" style={{ backgroundColor: 'rgb(191, 167, 145)' }}></div>
           </div>
 
-          {/* Sub-headings & Intro Statements */}
           <div className="space-y-4 mb-10">
             <p 
               style={{ 
@@ -503,7 +536,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
             </p>
           </div>
 
-          {/* "What you'll learn" Emphasis Subheading */}
           <p 
             style={{ 
               fontFamily: '"times new roman", times, serif', 
@@ -524,7 +556,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
             </span>
           </p>
 
-          {/* List Items Container with precise alignment & padded line layouts */}
           <div className="max-w-2xl mx-auto text-left space-y-4 mb-12">
             {[
               { key: 'homeHelpTakeaway1', text: "Understanding your child’s behavior and emotional needs" },
@@ -534,7 +565,7 @@ export default function Home({ inlineEditMode = false, externalState = null, set
               { key: 'homeHelpTakeaway5', text: "How to reduce daily stress and improve cooperation" },
               { key: 'homeHelpTakeaway6', text: "Clear practical strategies tailored specifically to your situation" }
             ].map((item, idx) => (
-              <div key={idx} className="flex items-start tracking-normal">
+              <div key={idx} className="flex items-start tracking-normal transform hover:translate-x-1 transition-transform duration-250">
                 <span className="mr-3 select-none shrink-0" style={{ fontSize: '18px' }}>🤎</span>
                 <p 
                   style={{ 
@@ -558,7 +589,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
             ))}
           </div>
 
-          {/* Closing Statement */}
           <p 
             style={{ 
               fontFamily: '"times new roman", times, serif', 
@@ -579,7 +609,6 @@ export default function Home({ inlineEditMode = false, externalState = null, set
             </span>
           </p>
 
-          {/* Minimalist Square Button Match featuring crisp Avenir typography */}
           <div className="flex justify-center items-center mt-6">
             <button 
               onClick={() => navigate('/book')} 
@@ -591,7 +620,7 @@ export default function Home({ inlineEditMode = false, externalState = null, set
                 backgroundColor: 'rgb(191, 167, 145)',
                 letterSpacing: '0.1em'
               }}
-              className="px-10 py-3.5 tracking-wider uppercase transition-all duration-300 hover:opacity-90 cursor-pointer rounded-none shadow-none border-none"
+              className="px-10 py-3.5 tracking-wider uppercase transition-all duration-300 hover:bg-[#a38c77] cursor-pointer rounded-none shadow-sm border-none active:scale-98"
             >
               <span
                 contentEditable={inlineEditMode}

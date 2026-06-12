@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import ScrollToTop from './components/ScrollToTop';
 import { CONFIG } from './config'; // Make sure this path points correctly to your config file
 
 import Navbar from './components/Navbar';
@@ -87,6 +88,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop behavior="auto" />
       <MasterLayoutSwitcher systemConfig={systemConfig} />
     </BrowserRouter>
   );
