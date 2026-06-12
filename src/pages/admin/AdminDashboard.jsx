@@ -8,9 +8,14 @@ import CalendarNavigation from '../../components/admin/CalendarNavigation';
 import CalendarViewports from '../../components/admin/CalendarViewports';
 import ControlDrawer from '../../components/admin/ControlDrawer';
 import BookingsDatabase from '../../components/admin/BookingsDatabase';
+
+// Public Playground Client Context Canvas Modules
 import Home from '../client/Home';
 import Book from '../client/Booking';
 import Resources from '../client/Resources'; 
+import About from '../client/About';
+import Contact from '../client/Contact';
+import Consultation from '../client/Consultation';
 
 const getTodayString = () => {
   const today = new Date();
@@ -51,13 +56,11 @@ export default function AdminDashboard() {
 
   const [sessionPrice, setSessionPrice] = useState('25000');
   const [siteContent, setSiteContent] = useState({});
-
-  // Form initialization
   const [newBook, setNewBook] = useState({ title: '', subtitle: '', downloadUrl: '', coverImage: '' });
 
   useEffect(() => {
     if (!token) {
-      navigate('/admin/login');
+      handleAuthFailure();
       return;
     }
     syncWorkspaceData();
@@ -69,6 +72,15 @@ export default function AdminDashboard() {
     setTimeout(() => setToast(null), 4000);
   };
 
+  // 🛡️ Centralized Session Invalidation Handler
+  const handleAuthFailure = () => {
+    showToast('Session context expired. Re-authenticating...', 'error');
+    localStorage.clear();
+    setTimeout(() => {
+      navigate('/admin/login');
+    }, 1500);
+  };
+
   const syncWorkspaceData = async () => {
     try {
       setLoading(true);
@@ -77,9 +89,7 @@ export default function AdminDashboard() {
         headers: { 'Authorization': `Token ${token}` }
       });
       if (res.status === 401) {
-        showToast('Session expired. Please log in again.', 'error');
-        localStorage.clear();
-        navigate('/admin/login');
+        handleAuthFailure();
         return;
       }
       if(res.ok) {
@@ -119,7 +129,7 @@ export default function AdminDashboard() {
         body: JSON.stringify({ price: sessionPrice })
       });
       if (res.status === 401) {
-        showToast('Your session has expired. Copy your changes and log in again.', 'error');
+        handleAuthFailure();
         return;
       }
       if (res.ok) {
@@ -146,7 +156,7 @@ export default function AdminDashboard() {
         body: JSON.stringify({ site_content: siteContent })
       });
       if (res.status === 401) {
-        showToast('Error 401: Unauthorized. Please log back in to save updates.', 'error');
+        handleAuthFailure();
         return;
       }
       if (res.ok) {
@@ -162,24 +172,18 @@ export default function AdminDashboard() {
     }
   };
 
-  // Automated asset direct link resolution helper
   const cleanImageLink = (url) => {
     if (!url) return '';
     let clean = url.trim();
-    // Transforms structural standard landing pages into raw file streams
     if (clean.includes('postimg.cc/')) {
       clean = clean.replace('postimg.cc/', 'i.postimg.cc/') + '.png';
       clean = clean.replace(/\.cc\/([a-zA-Z0-9]+)$/, '.cc/$1'); 
-    }
-    if (clean.includes('ibb.co/') && !clean.includes('i.ibb.co')) {
-      showToast('Tip: Use direct link option for ImgBB sources.', 'error');
     }
     return clean;
   };
 
   const handleAddBook = (e) => {
     e.preventDefault();
-    // Combined system check verification boundary
     if (!newBook.title.trim() || !newBook.subtitle.trim() || !newBook.downloadUrl.trim() || !newBook.coverImage.trim()) {
       showToast('All fields (including the Cover Image) are mandatory.', 'error');
       return;
@@ -267,7 +271,7 @@ export default function AdminDashboard() {
         })
       });
       if (response.status === 401) {
-        showToast('Unauthorized operation session context.', 'error');
+        handleAuthFailure();
         return;
       }
       if (response.ok) {
@@ -293,6 +297,10 @@ export default function AdminDashboard() {
         method: 'DELETE',
         headers: { 'Authorization': `Token ${token}` }
       });
+      if (res.status === 401) {
+        handleAuthFailure();
+        return;
+      }
       if (res.ok) {
         showToast('Selected time slot removed.');
         syncWorkspaceData();
@@ -318,6 +326,10 @@ export default function AdminDashboard() {
         },
         body: JSON.stringify({ booking_id: bookingId })
       });
+      if (res.status === 401) {
+        handleAuthFailure();
+        return;
+      }
       if (res.ok) {
         showToast('Reservation status flagged as cancelled.');
         syncWorkspaceData();
@@ -347,6 +359,10 @@ export default function AdminDashboard() {
           new_time: newTime 
         })
       });
+      if (res.status === 401) {
+        handleAuthFailure();
+        return;
+      }
       if (res.ok) {
         showToast('Client appointment shifted successfully.');
         setRescheduleTargetBooking(null); 
@@ -361,7 +377,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // Button disabled rule condition flag parameter check evaluation
   const isFormInvalid = !newBook.title.trim() || !newBook.subtitle.trim() || !newBook.downloadUrl.trim() || !newBook.coverImage.trim();
 
   return (
@@ -486,7 +501,10 @@ export default function AdminDashboard() {
           {activeSubPage === 'content' && (
             <div className="space-y-4">
               <div className="bg-white border border-[#bfa791]/20 p-4 rounded-xs flex justify-between items-center shadow-xs">
-                <h3 className="font-serif text-md text-[#634032] uppercase tracking-wide">Edit Website Text</h3>
+                <div>
+                  <h3 className="font-serif text-md text-[#634032] uppercase tracking-wide">Edit Website Text</h3>
+                  <p className="text-[10px] text-[#a38c77] font-mono">Scroll down through the viewports below to review or directly tweak active layout headings.</p>
+                </div>
                 <button 
                   onClick={handleSaveContent} 
                   disabled={actionLoading}
@@ -496,13 +514,36 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              <div className="border border-[#bfa791]/20 rounded-sm bg-white overflow-hidden shadow-2xs p-4 max-h-[calc(100vh-300px)] overflow-y-auto">
-                <div className="space-y-8 pointer-events-auto">
-                  <div>
+              <div className="border border-[#bfa791]/20 rounded-sm bg-white overflow-hidden shadow-2xs p-4 h-[calc(100vh-280px)] overflow-y-auto">
+                <div className="space-y-12 pointer-events-auto pb-20">
+                  <div className="border-b border-[#bfa791]/10 pb-6">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-amber-800 bg-amber-50 px-2 py-1 mb-4 inline-block font-bold">1. Home Page Viewport Section</span>
                     <Home inlineEditMode={true} externalState={siteContent} setExternalState={setSiteContent} />
                   </div>
-                  <div className="pt-8 border-t border-gray-200">
+                  
+                  <div className="border-b border-[#bfa791]/10 pb-6">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-amber-800 bg-amber-50 px-2 py-1 mb-4 inline-block font-bold">2. Booking Calendar Base Section</span>
                     <Book inlineEditMode={true} externalState={siteContent} setExternalState={setSiteContent} />
+                  </div>
+
+                  <div className="border-b border-[#bfa791]/10 pb-6">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-amber-800 bg-amber-50 px-2 py-1 mb-4 inline-block font-bold">3. Consultation Pricing Landing Page</span>
+                    <Consultation inlineEditMode={true} externalState={siteContent} setExternalState={setSiteContent} />
+                  </div>
+
+                  <div className="border-b border-[#bfa791]/10 pb-6">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-amber-800 bg-amber-50 px-2 py-1 mb-4 inline-block font-bold">4. About Biography Section</span>
+                    <About inlineEditMode={true} externalState={siteContent} setExternalState={setSiteContent} />
+                  </div>
+
+                  <div className="border-b border-[#bfa791]/10 pb-6">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-amber-800 bg-amber-50 px-2 py-1 mb-4 inline-block font-bold">5. Contact Channels / Inquiries</span>
+                    <Contact inlineEditMode={true} externalState={siteContent} setExternalState={setSiteContent} />
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-amber-800 bg-amber-50 px-2 py-1 mb-4 inline-block font-bold">6. Dynamic Literature Resources Grid</span>
+                    <Resources liveContent={siteContent} />
                   </div>
                 </div>
               </div>
