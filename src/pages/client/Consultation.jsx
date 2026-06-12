@@ -243,32 +243,19 @@ export default function Consultation({ inlineEditMode = false, externalState = n
         </div>
       </section>
 
-     
-      {/* SECTION 3: DEEP EXTENDED BIO */}
+     {/* SECTION 3: DEEP EXTENDED BIO */}
       <section className="bg-[#efe9e4] py-24 px-6 md:px-12 transition-all duration-300">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
           
-          {/* Left Column: Portrait Frame */}
-          <div className="md:col-span-5 flex justify-center md:justify-start">
-            <div className="w-full max-w-[360px] aspect-[3/4] bg-[#fff] overflow-hidden border border-[#bfa791]/10 rounded-xs shadow-xs">
-              <img 
-                src={zeeImage} 
-                alt="Zainab Ahmed Portrait Profile" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Right Column: Bio Content with Matching Typography */}
-          <div className="md:col-span-7 flex flex-col items-center md:items-start text-left">
-            
-            {/* Stacked Heading Title */}
+          {/* Left Column: Stacked Title Left-Aligned Directly Above Managed Image Frame */}
+          <div className="md:col-span-4 flex flex-col items-center md:items-start text-center md:text-left">
             <h2 
               style={{ 
                 fontFamily: "'Times New Roman', times, serif",
-                fontSize: '48px', // Scaled slightly for bio context
+                fontSize: '44px',
                 fontWeight: '400',
                 lineHeight: '48px',
+                letterSpacing: '-1.5px',
                 color: 'rgb(191, 167, 145)'
               }}
               className="uppercase mb-8 w-full text-center md:text-left"
@@ -281,17 +268,37 @@ export default function Consultation({ inlineEditMode = false, externalState = n
               >
                 {getConsultValue('consultAboutHeader1', 'ABOUT')}
               </span>
-              <span
-                contentEditable={inlineEditMode}
-                suppressContentEditableWarning={inlineEditMode}
-                className={inlineEditMode ? 'bg-white/80 ring-1 ring-dashed ring-[#bfa791] px-1 block mt-2' : 'block mt-2'}
-                onBlur={(e) => handleEditableBlur('consultAboutHeader2', e.currentTarget.innerText)}
-              >
-                {getConsultValue('consultAboutHeader2', 'ZAINAB AHMED')}
-              </span>
+              <div className="mt-2">
+                <span
+                  contentEditable={inlineEditMode}
+                  suppressContentEditableWarning={inlineEditMode}
+                  className={inlineEditMode ? 'bg-white/80 ring-1 ring-dashed ring-[#bfa791] px-1 block' : 'block'}
+                  onBlur={(e) => handleEditableBlur('consultAboutHeader2', e.currentTarget.innerText)}
+                >
+                  {getConsultValue('consultAboutHeader2', 'ZAINAB AHMED')}
+                </span>
+              </div>
             </h2>
+
+            {/* Slightly reduced max-width portrait layout frame to sit even with right content flow height */}
+            <div className="w-full max-w-[300px] aspect-[3/4] bg-[#fff] overflow-hidden border border-[#bfa791]/10 rounded-xs shadow-xs">
+              <img 
+                src={zeeImage} 
+                alt="Zainab Ahmed Portrait Profile" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Bold and Italic Consultant Title - Placed Directly Underneath the Image Container */}
+            <p className="text-[14px] md:text-[15px] tracking-widest text-[#bfa791] font-sans mt-5 italic font-bold w-full text-center md:text-left">
+              Parenting & Child Development Consultant
+            </p>
+          </div>
+
+          {/* Right Column: Expanded Width Text Layout Block */}
+          <div className="md:col-span-8 flex flex-col items-center md:items-start text-left md:pt-28">
             
-            {/* Body Paragraphs */}
+            {/* Body Paragraphs - Swapped to global text-justify alignment */}
             <div 
               style={{
                 fontFamily: "'Times New Roman', times, serif",
@@ -300,7 +307,7 @@ export default function Consultation({ inlineEditMode = false, externalState = n
                 lineHeight: '25.2px',
                 color: 'rgb(191, 167, 145)'
               }}
-              className="space-y-6 text-justify md:text-left"
+              className="space-y-6 text-justify w-full"
             >
               <p
                 contentEditable={inlineEditMode}
@@ -308,16 +315,33 @@ export default function Consultation({ inlineEditMode = false, externalState = n
                 className={inlineEditMode ? 'bg-white/80 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}
                 onBlur={(e) => handleEditableBlur('consultAboutBio1', e.currentTarget.innerText)}
               >
-                {getConsultValue('consultAboutBio1', 'I’ve always been passionate about children and the environments they grow in. That passion led me to study Early Childhood Education after earning my first degree in Business Administration. I’m currently pursuing my Master’s degree in Educational Administration and Planning, continuing to deepen my understanding of how children learn, grow, and thrive.')}
+                {inlineEditMode ? (
+                  getConsultValue('consultAboutBio1', "I’ve always been passionate about children and the environments they grow in. That passion led me to study Early Childhood Education after earning my first degree in Business Administration. I’m currently pursuing my Master’s degree in Educational Administration and Planning, continuing to deepen my understanding of how children learn, grow, and thrive.")
+                ) : (
+                  <>
+                    <strong className="italic font-bold">I’ve always been passionate about children and the environments they grow in.</strong>
+                    {" That passion led me to study Early Childhood Education after earning my first degree in Business Administration. I’m currently pursuing my Master’s degree in Educational Administration and Planning, continuing to deepen my understanding of how children learn, grow, and thrive."}
+                  </>
+                )}
               </p>
+              
               <p
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
                 className={inlineEditMode ? 'bg-white/80 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}
                 onBlur={(e) => handleEditableBlur('consultAboutBio2', e.currentTarget.innerText)}
               >
-                {getConsultValue('consultAboutBio2', 'But for me, it was never just about studying children. I became more interested in the people, systems, and environments shaping their everyday experiences. The parents raising them, the schools teaching them, and the communities supporting them.')}
+                {inlineEditMode ? (
+                  getConsultValue('consultAboutBio2', "But for me, it was never just about studying children. I became more interested in the people, systems, and environments shaping their everyday experiences. The parents raising them, the schools teaching them, and the communities supporting them.")
+                ) : (
+                  <>
+                    {"But for me, it was never just about studying children. I became more interested in the "}
+                    <strong className="italic font-bold">people, systems, and environments</strong>
+                    {" shaping their everyday experiences. The parents raising them, the schools teaching them, and the communities supporting them."}
+                  </>
+                )}
               </p>
+
               <p
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
@@ -327,15 +351,10 @@ export default function Consultation({ inlineEditMode = false, externalState = n
                 {getConsultValue('consultAboutBio3', 'At the heart of everything I do is a simple belief: when we better understand children, we can better support them. And when children are supported well, they grow into confident, capable, and emotionally secure individuals.')}
               </p>
             </div>
-            
-            <p className="text-[13px] uppercase tracking-widest text-[#bfa791] font-sans mt-8 italic w-full text-center md:text-left">
-              Parenting & Child Development Consultant
-            </p>
           </div>
 
         </div>
       </section>
-
 
 
       {/* SECTION 4: THE STEP-BY-STEP PROCESS */}

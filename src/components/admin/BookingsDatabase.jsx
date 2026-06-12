@@ -66,8 +66,8 @@ export default function BookingsDatabase({ bookings, isPastDate, handleCancelBoo
     <div className="bg-white border border-[#bfa791]/20 rounded-sm p-6 space-y-6 selection:bg-[#efe9e4]">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
-          <h3 className="font-serif text-lg font-normal text-[#634032]">All Client Sessions</h3>
-          <p className="text-xs text-[#a38c77]">View, filter, sort, and examine child consultation profiles.</p>
+          <h3 className="font-serif text-lg font-normal text-[#634032]">All Bookings</h3>
+          <p className="text-xs text-[#a38c77]">View and manage bookings.</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-3">
@@ -84,10 +84,10 @@ export default function BookingsDatabase({ bookings, isPastDate, handleCancelBoo
             onChange={(e) => setStatusFilter(e.target.value)}
             className="bg-white border border-[#bfa791]/30 text-xs px-2 py-2 outline-none focus:border-[#634032] rounded-2xs cursor-pointer text-[#634032]"
           >
-            <option value="ALL">All Payment Statuses</option>
-            <option value="CONFIRMED">Confirmed / Paid</option>
-            <option value="PENDING">Pending Checkout</option>
-            <option value="CANCELED">Canceled / Released</option>
+            <option value="ALL">All statuses</option>
+            <option value="CONFIRMED">Paid</option>
+            <option value="PENDING">Pending</option>
+            <option value="CANCELED">Cancelled</option>
           </select>
         </div>
       </div>
@@ -103,7 +103,7 @@ export default function BookingsDatabase({ bookings, isPastDate, handleCancelBoo
                 Parent Name {sortKey === 'client_name' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
               </th>
               <th onClick={() => requestSort('date_booked')} className="p-3 cursor-pointer hover:bg-[#efe9e4] transition-colors">
-                Target Date {sortKey === 'date_booked' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                Date {sortKey === 'date_booked' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
               </th>
               <th className="p-3">Time</th>
               <th onClick={() => requestSort('status')} className="p-3 cursor-pointer hover:bg-[#efe9e4] transition-colors">
@@ -139,7 +139,7 @@ export default function BookingsDatabase({ bookings, isPastDate, handleCancelBoo
                           onClick={() => setExpandedRowId(isExpanded ? null : b.id)}
                           className="text-[#a38c77] hover:text-[#634032] underline tracking-wide cursor-pointer"
                         >
-                          {isExpanded ? 'Hide Details' : 'View Profile'}
+                          {isExpanded ? 'Hide details' : 'View details'}
                         </button>
                         {!past && b.status === 'CONFIRMED' && (
                           <button 
@@ -160,7 +160,7 @@ export default function BookingsDatabase({ bookings, isPastDate, handleCancelBoo
                             
                             {/* Col 1: Contact */}
                             <div className="space-y-1">
-                              <span className="font-mono text-[9px] text-[#a38c77] block uppercase font-bold tracking-wider mb-1">Parent Identity</span>
+                              <span className="font-mono text-[9px] text-[#a38c77] block uppercase font-bold tracking-wider mb-1">Parent details</span>
                               <p><span className="text-gray-400">Name:</span> <span className="font-medium">{b.client_name || 'N/A'}</span></p>
                               <p><span className="text-gray-400">Email:</span> <span className="font-medium underline">{b.client_email}</span></p>
                               <p><span className="text-gray-400">Phone:</span> <span className="font-medium">{b.client_phone || 'N/A'}</span></p>
@@ -176,9 +176,9 @@ export default function BookingsDatabase({ bookings, isPastDate, handleCancelBoo
                             
                             {/* Col 3: Diagnostic Briefing */}
                             <div className="space-y-1">
-                              <span className="font-mono text-[9px] text-[#a38c77] block uppercase font-bold tracking-wider mb-1">Consultation Intake Diagnostics</span>
+                              <span className="font-mono text-[9px] text-[#a38c77] block uppercase font-bold tracking-wider mb-1">Intake notes</span>
                               <div className="bg-gray-50/50 p-2.5 border border-gray-100 rounded-2xs italic text-gray-600 max-h-32 overflow-y-auto leading-relaxed whitespace-pre-wrap">
-                                {b.intake_notes || "No operational diagnostic brief submitted."}
+                                {b.intake_notes || "No notes provided."}
                               </div>
                             </div>
 

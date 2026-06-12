@@ -52,9 +52,9 @@ export default function CalendarNavigation({ viewMode, setViewMode, focusedDate,
                 setExpandedWeekDay(null);
                 setSelectedDatesPool([focusedDate]); 
               }}
-              className={`px-3 py-1 text-[10px] uppercase font-semibold tracking-wider transition-all rounded-xs cursor-pointer ${viewMode === mode ? 'bg-[#634032] text-white shadow-xs' : 'text-[#634032]/60 hover:text-[#634032]'}`}
-            >
-              {mode} View
+                    className={`px-3 py-1 text-[10px] font-semibold tracking-wider transition-all rounded-xs cursor-pointer ${viewMode === mode ? 'bg-[#634032] text-white shadow-xs' : 'text-[#634032]/60 hover:text-[#634032]'}`}
+                  >
+                    {mode === 'day' ? 'Day' : mode === 'week' ? 'Week' : mode === 'month' ? 'Month' : 'Year'}
             </button>
           ))}
         </div>
@@ -69,7 +69,7 @@ export default function CalendarNavigation({ viewMode, setViewMode, focusedDate,
         </button>
         
         <div className="text-center">
-          <span className="text-[9px] text-[#a38c77] block uppercase font-medium tracking-widest mb-0.5">Selected Window</span>
+          <span className="text-[9px] text-[#a38c77] block uppercase font-medium tracking-widest mb-0.5">Current Range</span>
           <span className="text-xs font-serif font-bold text-[#634032] tracking-wide">{getHeaderLabel()}</span>
         </div>
 

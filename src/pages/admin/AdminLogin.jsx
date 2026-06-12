@@ -30,7 +30,7 @@ export default function AdminLogin() {
         localStorage.setItem('admin_username', username);
         navigate('/admin/dashboard');
       } else {
-        setError(data.error || 'Invalid management credentials.');
+        setError(data.error || 'Invalid credentials.');
       }
     } catch (err) {
       setError('Unable to reach the authentication backend.');
@@ -43,8 +43,8 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-white flex items-center justify-center px-6 text-[#bfa791]">
       <div className="w-full max-w-md border border-[#bfa791]/20 p-8 md:p-10 bg-white rounded-sm shadow-xs">
         <div className="text-center mb-8">
-          <span className="text-[10px] uppercase tracking-[0.3em] text-[#a38c77]/70 block mb-2">— MANAGEMENT —</span>
-          <h2 className="font-serif text-2xl text-[#634032] font-light">Internal Workspace</h2>
+          <span className="text-[10px] uppercase tracking-[0.3em] text-[#a38c77]/70 block mb-2">— CONSULTANT —</span>
+          <h2 className="font-serif text-2xl text-[#634032] font-light">Consultant login</h2>
         </div>
 
         {error && (
@@ -61,7 +61,7 @@ export default function AdminLogin() {
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter administrator identifier"
+              placeholder="Enter username"
               className="w-full bg-white border border-[#bfa791]/30 focus:border-[#634032] px-3 py-2.5 text-xs text-[#634032] focus:outline-none rounded-xs transition-colors"
             />
           </div>
@@ -83,7 +83,7 @@ export default function AdminLogin() {
             disabled={loading}
             className="w-full bg-[#634032] text-[#efe9e4] py-3 font-serif italic tracking-wide hover:bg-[#a38c77] hover:text-white transition-all duration-300 cursor-pointer rounded-xs text-center disabled:opacity-40"
           >
-            {loading ? 'Verifying...' : 'Access Workspace'}
+            {loading ? 'Verifying...' : 'Sign in'}
           </button>
         </form>
       </div>

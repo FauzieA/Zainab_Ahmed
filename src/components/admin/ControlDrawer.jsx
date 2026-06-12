@@ -150,7 +150,7 @@ export default function ControlDrawer({
   };
 
   const submitDayBlackout = async () => {
-    if (!window.confirm(`Block all bookings for: ${selectedDatesPool.join(', ')}?`)) return;
+    if (!window.confirm(`Close bookings for: ${selectedDatesPool.join(', ')}?`)) return;
     try {
       // FIXED: Removed duplicate '/api/booking' path segment
       const res = await fetch(`${CONFIG.API_BASE_URL}/admin-blackout-dates/`, {
@@ -159,7 +159,7 @@ export default function ControlDrawer({
         body: JSON.stringify({ dates: selectedDatesPool })
       });
       if (res.ok) {
-        showToast(`✓ ${selectedDatesPool.length} date(s) blocked successfully`, "success");
+        showToast(`✓ ${selectedDatesPool.length} date(s) closed`, "success");
         syncWorkspaceData();
       } else {
         showToast("⚠ Could not block dates. Please try again.", "error", 4000);
@@ -425,7 +425,7 @@ export default function ControlDrawer({
               This will remove all open times and stop bookings for these dates.
             </p>
             <div className="bg-red-50/40 border border-red-100 p-2.5 rounded-xs text-[11px] text-gray-700 max-h-16 overflow-y-auto font-mono">
-              <span className="font-sans font-bold block text-red-900 uppercase text-[9px] mb-0.5">Target Range:</span>
+              <span className="font-sans font-bold block text-red-900 uppercase text-[9px] mb-0.5">Dates:</span>
               {selectedDatesPool.join(', ')}
             </div>
             <button type="button" onClick={submitDayBlackout} className="w-full bg-red-600 text-white py-2 text-xs uppercase tracking-wider font-bold rounded-xs hover:bg-red-700 transition-colors cursor-pointer">

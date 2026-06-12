@@ -15,7 +15,7 @@ export default function CalendarViewports({
         <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
           {isPastDate(focusedDate) && (
             <div className="bg-gray-50 border border-gray-200 text-[11px] px-3 py-2 text-gray-500 italic rounded-xs mb-2">
-              Viewing historic timeline records. Slot provisioning locked for this date row.
+              Viewing past dates — you can't add or change slots here.
             </div>
           )}
           {TIME_OPTIONS.map((time) => {
@@ -26,10 +26,10 @@ export default function CalendarViewports({
               <div key={time} className={`flex justify-between items-center p-3 border rounded-xs transition-all ${targetBooking ? 'bg-emerald-50/10 border-emerald-100' : targetSlot ? 'bg-[#efe9e4]/10 border-[#bfa791]/30' : 'bg-gray-50/30 border-gray-100 opacity-60'}`}>
                 <div className="flex items-center space-x-4">
                   <span className="text-xs font-mono font-bold w-16">{time}</span>
-                  <span className="text-xs font-medium">{targetBooking ? `Booked by ${targetBooking.client_email}` : targetSlot ? 'Vacant Public Allocation Slot' : 'No Active Generation Target'}</span>
+                  <span className="text-xs font-medium">{targetBooking ? `Booked by ${targetBooking.client_email}` : targetSlot ? 'Open slot' : 'No times available'}</span>
                 </div>
                 <div className="text-[10px] uppercase font-bold tracking-wider text-[#a38c77]">
-                  {targetBooking ? <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-sm">Claimed</span> : targetSlot ? <span className="text-[#634032] bg-white px-2 py-0.5 border border-[#bfa791]/20 rounded-sm">Available</span> : <span className="text-gray-300">Offline</span>}
+                  {targetBooking ? <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-sm">Booked</span> : targetSlot ? <span className="text-[#634032] bg-white px-2 py-0.5 border border-[#bfa791]/20 rounded-sm">Available</span> : <span className="text-gray-300">No availability</span>}
                 </div>
               </div>
             );
@@ -70,10 +70,10 @@ export default function CalendarViewports({
                       return (
                         <div key={s.id} className="flex justify-between items-center py-1 font-mono border-b border-[#bfa791]/5 last:border-0">
                           <span>{s.time_string}</span>
-                          <span className={bMatch ? 'text-emerald-700 font-bold' : 'text-gray-400 italic'}>{bMatch ? `Booked: ${bMatch.client_email}` : 'Expired Vacant Slot'}</span>
+                          <span className={bMatch ? 'text-emerald-700 font-bold' : 'text-gray-400 italic'}>{bMatch ? `Booked: ${bMatch.client_email}` : 'Past open time'}</span>
                         </div>
                       );
-                    }) : <p className="text-[11px] italic text-gray-400">No layouts configured for this coordinate.</p>}
+                    }) : <p className="text-[11px] italic text-gray-400">No times set for this date.</p>}
                   </div>
                 )}
               </div>
