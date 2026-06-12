@@ -551,115 +551,134 @@ export default function AdminDashboard() {
           )}
 
           {activeSubPage === 'library' && (
-            <div className="space-y-6">
-              <div className="bg-white border border-[#bfa791]/20 p-4 rounded-xs flex justify-between items-center shadow-xs">
-                <div>
-                  <h3 className="font-serif text-md text-[#634032] uppercase tracking-wide">Digital Resource Management</h3>
-                  <p className="text-[10px] text-[#a38c77] font-mono mt-0.5">Append or drop downloadable digital books across user viewports.</p>
-                </div>
-                <button 
-                  onClick={handleSaveContent} 
-                  disabled={actionLoading}
-                  className="bg-[#634032] text-white text-[10px] uppercase tracking-widest px-6 py-2.5 rounded-2xs hover:bg-[#a38c77] transition-all cursor-pointer disabled:opacity-40 shadow-xs font-semibold"
-                >
-                  {actionLoading ? 'Publishing...' : 'Commit Library Updates'}
-                </button>
-              </div>
+  <div className="space-y-6">
+    <div className="bg-white border border-[#bfa791]/20 p-4 rounded-xs flex justify-between items-center shadow-xs">
+      <div>
+        <h3 className="font-serif text-md text-[#634032] uppercase tracking-wide">Digital Resource Management</h3>
+        <p className="text-[10px] text-[#a38c77] font-mono mt-0.5">Append or drop downloadable digital books across user viewports.</p>
+      </div>
+      <button 
+        onClick={handleSaveContent} 
+        disabled={actionLoading}
+        className="bg-[#634032] text-white text-[10px] uppercase tracking-widest px-6 py-2.5 rounded-2xs hover:bg-[#a38c77] transition-all cursor-pointer disabled:opacity-40 shadow-xs font-semibold"
+      >
+        {actionLoading ? 'Publishing...' : 'Commit Library Updates'}
+      </button>
+    </div>
 
-              <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-                <div className="xl:col-span-5 bg-white border border-[#bfa791]/20 p-6 space-y-6">
-                  <div className="space-y-2">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#a38c77]">Current Catalog</p>
-                    {(!siteContent.libraryBooks || siteContent.libraryBooks.length === 0) ? (
-                      <p className="text-xs italic text-gray-400 py-2">No active dynamic library items logged yet.</p>
-                    ) : (
-                      <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                        {siteContent.libraryBooks.map(book => (
-                          <div key={book.id} className="flex justify-between items-center bg-[#efe9e4]/20 p-2.5 border border-gray-100">
-                            <div className="truncate pr-2">
-                              <p className="font-bold uppercase tracking-wide text-[10px] text-[#634032] truncate">{book.title}</p>
-                              <p className="text-[9px] text-[#a38c77] font-serif italic truncate">{book.subtitle || 'No subtitle provided'}</p>
-                            </div>
-                            <button 
-                              type="button" 
-                              onClick={() => handleDeleteBook(book.id)} 
-                              className="text-red-600 hover:text-red-800 font-mono text-[9px] uppercase tracking-wider font-bold px-2 cursor-pointer flex-shrink-0"
-                            >
-                              ✕ Remove
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+    <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+      <div className="xl:col-span-5 bg-white border border-[#bfa791]/20 p-6 space-y-6">
+        <div className="space-y-2">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[#a38c77]">Current Catalog</p>
+          {(!siteContent.libraryBooks || siteContent.libraryBooks.length === 0) ? (
+            <p className="text-xs italic text-gray-400 py-2">No active dynamic library items logged yet.</p>
+          ) : (
+            <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+              {siteContent.libraryBooks.map(book => (
+                <div key={book.id} className="flex justify-between items-center bg-[#efe9e4]/20 p-2.5 border border-gray-100">
+                  <div className="truncate pr-2">
+                    <p className="font-bold uppercase tracking-wide text-[10px] text-[#634032] truncate">{book.title}</p>
+                    <p className="text-[9px] text-[#a38c77] font-serif italic truncate">{book.subtitle || 'No subtitle provided'}</p>
                   </div>
-
-                  <form onSubmit={handleAddBook} className="space-y-4 border-t border-[#bfa791]/10 pt-4">
-                    <p className="text-[10px] uppercase font-bold tracking-wider text-[#a38c77]">📖 Add New E-Book Record</p>
-                    
-                    <div className="space-y-3 text-xs text-[#634032]">
-                      <div>
-                        <label className="block text-[9px] font-bold tracking-wider uppercase mb-1">Book Title *</label>
-                        <input 
-                          type="text" required value={newBook.title}
-                          onChange={e => setNewBook({...newBook, title: e.target.value.toUpperCase()})}
-                          className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none text-xs focus:border-[#634032]"
-                          placeholder="THE PEACEFUL BLUEPRINT"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[9px] font-bold tracking-wider uppercase mb-1">Subtitle / Short Blurb *</label>
-                        <textarea 
-                          rows="2" required value={newBook.subtitle}
-                          onChange={e => setNewBook({...newBook, subtitle: e.target.value})}
-                          className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none text-xs resize-none focus:border-[#634032]"
-                          placeholder="Navigating early childhood tantrums safely..."
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[9px] font-bold tracking-wider uppercase mb-1">Download URL Link *</label>
-                        <input 
-                          type="text" required value={newBook.downloadUrl}
-                          onChange={e => setNewBook({...newBook, downloadUrl: e.target.value})}
-                          className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none text-xs font-mono text-[11px] focus:border-[#634032]"
-                          placeholder="https://your-storage.com/files/book.pdf"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[9px] font-bold tracking-wider uppercase mb-1">Cover Image Link *</label>
-                        <input 
-                          type="text" required value={newBook.coverImage}
-                          onChange={e => setNewBook({...newBook, coverImage: e.target.value})}
-                          className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none text-xs font-mono text-[11px] focus:border-[#634032]"
-                          placeholder="https://postimg.cc/GBvfN2qk"
-                        />
-                      </div>
-                    </div>
-
-                    <button 
-                      type="submit" 
-                      disabled={isFormInvalid}
-                      className="w-full bg-[#634032] text-white py-2 text-[10px] uppercase font-mono tracking-widest hover:bg-[#a38c77] transition-all duration-300 rounded-none disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                    >
-                      + Stage Book Object
-                    </button>
-                  </form>
+                  <button 
+                    type="button" 
+                    onClick={() => handleDeleteBook(book.id)} 
+                    className="text-red-600 hover:text-red-800 font-mono text-[9px] uppercase tracking-wider font-bold px-2 cursor-pointer flex-shrink-0"
+                  >
+                    ✕ Remove
+                  </button>
                 </div>
-
-                <div className="xl:col-span-7 border border-[#bfa791]/20 bg-white rounded-xs overflow-hidden shadow-2xs max-h-[calc(100vh-300px)] overflow-y-auto">
-                  <div className="p-2 bg-gray-50 text-[9px] font-mono uppercase tracking-widest text-[#a38c77] border-b border-[#bfa791]/10 text-center">
-                    ✨ Live Playground Layout Canvas Preview
-                  </div>
-                  <div className="pointer-events-none scale-95 origin-top transition-all">
-                    <Resources liveContent={siteContent} />
-                  </div>
-                </div>
-
-              </div>
+              ))}
             </div>
           )}
+        </div>
+
+        <form onSubmit={handleAddBook} className="space-y-4 border-t border-[#bfa791]/10 pt-4">
+          <p className="text-[10px] uppercase font-bold tracking-wider text-[#a38c77]">📖 Add New E-Book Record</p>
+          
+          <div className="space-y-3 text-xs text-[#634032]">
+            <div>
+              <label className="block text-[9px] font-bold tracking-wider uppercase mb-1">Book Title *</label>
+              <input 
+                type="text" required value={newBook.title}
+                onChange={e => setNewBook({...newBook, title: e.target.value.toUpperCase()})}
+                className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none text-xs focus:border-[#634032]"
+                placeholder="THE PEACEFUL BLUEPRINT"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[9px] font-bold tracking-wider uppercase mb-1">Subtitle / Short Blurb *</label>
+              <textarea 
+                rows="2" required value={newBook.subtitle}
+                onChange={e => setNewBook({...newBook, subtitle: e.target.value})}
+                className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none text-xs resize-none focus:border-[#634032]"
+                placeholder="Navigating early childhood tantrums safely..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-[9px] font-bold tracking-wider uppercase mb-1">Download URL Link *</label>
+              <input 
+                type="text" required value={newBook.downloadUrl}
+                onChange={e => setNewBook({...newBook, downloadUrl: e.target.value})}
+                className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none text-xs font-mono text-[11px] focus:border-[#634032]"
+                placeholder="https://your-storage.com/files/book.pdf"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[9px] font-bold tracking-wider uppercase mb-1">Cover Image Link *</label>
+              <input 
+                type="text" required value={newBook.coverImage}
+                onChange={e => setNewBook({...newBook, coverImage: e.target.value})}
+                className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none text-xs font-mono text-[11px] focus:border-[#634032]"
+                placeholder="https://postimg.cc/GBvfN2qk"
+              />
+            </div>
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={isFormInvalid}
+            className="w-full bg-[#634032] text-white py-2 text-[10px] uppercase font-mono tracking-widest hover:bg-[#a38c77] transition-all duration-300 rounded-none disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer mb-2"
+          >
+            + Stage Book Object
+          </button>
+
+          {/* ✨ HELPER NOTE BLOCK WITH DIRECT LINK FOR POSTIMAGES */}
+          <div className="bg-[#efe9e4]/40 border border-[#bfa791]/20 p-3 rounded-none text-[11px] text-[#634032] space-y-1.5 leading-relaxed">
+            <p className="font-bold uppercase tracking-wider text-[9px] text-[#a38c77] flex items-center gap-1">
+              💡 Image Hosting Helper Note:
+            </p>
+            <p>
+              To upload a custom book cover, open{' '}
+              <a 
+                href="https://postimages.org" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-amber-800 font-semibold underline hover:text-[#a38c77] transition-colors"
+              >
+                Postimages.org
+              </a>{' '}
+              to upload your file. Once uploaded, make sure to copy the **Direct Link** URL format and paste it into the Cover Image input field above.
+            </p>
+          </div>
+        </form>
+      </div>
+
+      <div className="xl:col-span-7 border border-[#bfa791]/20 bg-white rounded-xs overflow-hidden shadow-2xs max-h-[calc(100vh-300px)] overflow-y-auto">
+        <div className="p-2 bg-gray-50 text-[9px] font-mono uppercase tracking-widest text-[#a38c77] border-b border-[#bfa791]/10 text-center">
+          ✨ Live Playground Layout Canvas Preview
+        </div>
+        <div className="pointer-events-none scale-95 origin-top transition-all">
+          <Resources liveContent={siteContent} />
+        </div>
+      </div>
+
+    </div>
+  </div>
+)}
 
         </main>
       </div>

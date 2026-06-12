@@ -12,6 +12,17 @@ export default function Book({ inlineEditMode = false, externalState = null, set
     location: "Online (Google Meet)"
   });
 
+  const isPastDate = (dateStr) => {
+    if (!dateStr) return false;
+    const [d, m, y] = dateStr.split('/').map(Number);
+    const targetDate = new Date(y, m - 1, d);
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to midnight for an accurate date-only comparison
+    
+    return targetDate < today;
+  };
+
   const [allAvailableSlots, setAllAvailableSlots] = useState({});
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
   const today = new Date();
@@ -24,7 +35,7 @@ export default function Book({ inlineEditMode = false, externalState = null, set
   
   const [isIntakeOpen, setIsIntakeOpen] = useState(false);
 
-  // Structured content mapping closely to the design elements in Screenshot 2026-06-12 at 9.34.30 AM.jpg
+  // Structured content mapping closely to design structures
   const [editableTexts, setEditableTexts] = useState({
     descriptionText: "This 1:1 consultation is designed to help you navigate your child's behavior with practical, developmentally appropriate strategies. You'll leave with clear tools you can start using immediately.",
     whatWeSupport: "• Understanding your child's behavior & managing tantrums\n• Discipline strategies & effective communication\n• Expert parenting guidance",
@@ -179,7 +190,7 @@ export default function Book({ inlineEditMode = false, externalState = null, set
     <div className="min-h-screen bg-white text-[#634032] antialiased pb-24 selection:bg-[#efe9e4]">
       <section className="max-w-6xl mx-auto px-6 pt-16 grid grid-cols-1 md:grid-cols-12 gap-12">
         
-        {/* Left Column: Styled Feature Display following Poster Guidelines */}
+        {/* Left Column: Content Presentation */}
         <div className="md:col-span-7 space-y-8 text-[#634032]">
           <div className="border-b border-[#bfa791]/20 pb-4">
             <span className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#bfa791]">Zainab Ahmed</span>
@@ -202,9 +213,8 @@ export default function Book({ inlineEditMode = false, externalState = null, set
             </p>
           </div>
 
-          {/* Two Column Grid Matrix for Core Support and Outcomes */}
+          {/* Core Support and Outcomes Matrix */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Box 1: Support Details */}
             <div className="bg-[#efe9e4]/20 border border-[#bfa791]/30 p-5 relative pt-8 rounded-xs">
               <span className="absolute -top-2.5 left-4 bg-[#bfa791] text-white text-[9px] font-sans font-bold px-2.5 py-0.5 uppercase tracking-wider rounded-xs">
                 What We Support You With
@@ -220,7 +230,6 @@ export default function Book({ inlineEditMode = false, externalState = null, set
               </div>
             </div>
 
-            {/* Box 2: Gains Details */}
             <div className="bg-[#efe9e4]/20 border border-[#bfa791]/30 p-5 relative pt-8 rounded-xs">
               <span className="absolute -top-2.5 left-4 bg-[#bfa791] text-white text-[9px] font-sans font-bold px-2.5 py-0.5 uppercase tracking-wider rounded-xs">
                 What You'll Gain
@@ -237,7 +246,7 @@ export default function Book({ inlineEditMode = false, externalState = null, set
             </div>
           </div>
 
-          {/* Box 3: Full Width Exclusive Bonuses */}
+          {/* Exclusive Bonuses */}
           <div className="bg-[#efe9e4]/30 border border-dashed border-[#bfa791]/50 p-5 relative pt-8 rounded-xs">
             <span className="absolute -top-2.5 left-4 bg-[#634032] text-white text-[9px] font-sans font-bold px-2.5 py-0.5 uppercase tracking-wider rounded-xs">
               Exclusive Bonuses!
@@ -268,7 +277,7 @@ export default function Book({ inlineEditMode = false, externalState = null, set
           </div>
         </div>
 
-        {/* Right Column: Dynamic Calendar Engine Block Layout */}
+        {/* Right Column: Dynamic Calendar Block */}
         <div className="md:col-span-5 bg-[#efe9e4]/20 p-6 md:p-8 rounded-none border border-[#bfa791]/30 h-fit space-y-6">
           <div className="space-y-4">
             <h3 className="font-serif text-lg tracking-wide text-[#634032] font-normal">Select Date & Time</h3>
@@ -295,17 +304,31 @@ export default function Book({ inlineEditMode = false, externalState = null, set
           <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-medium text-[#a38c77]">
             {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => <div key={idx} className="py-1 opacity-60">{day}</div>)}
             {daysInMonth.map((day) => {
+              const dateStr = getFullDateKey(day);
               const isSelected = selectedDate === day;
-              const hasSlots = (allAvailableSlots[getFullDateKey(day)] || []).length > 0;
+              const isPast = isPastDate(dateStr);
+              const hasSlots = (allAvailableSlots[dateStr] || []).length > 0;
+              
               return (
                 <button
-                  key={day} type="button" onClick={() => setSelectedDate(day)}
-                  className={`py-2 text-[12px] rounded-none font-light relative cursor-pointer transition-all ${
-                    isSelected ? 'bg-[#634032] text-white font-medium shadow-xs' : hasSlots ? 'text-[#634032] font-bold hover:bg-[#efe9e4]' : 'text-gray-300 hover:bg-gray-50/40'
+                  key={day} 
+                  type="button" 
+                  disabled={isPast}
+                  onClick={() => !isPast && setSelectedDate(day)}
+                  className={`py-2 text-[12px] rounded-none font-light relative transition-all ${
+                    isPast 
+                      ? 'text-gray-200 line-through bg-gray-50/10 cursor-not-allowed opacity-40' 
+                      : isSelected 
+                      ? 'bg-[#634032] text-white font-medium shadow-xs cursor-pointer' 
+                      : hasSlots 
+                      ? 'text-[#634032] font-bold hover:bg-[#efe9e4] cursor-pointer' 
+                      : 'text-gray-300 hover:bg-gray-50/40 cursor-pointer'
                   }`}
                 >
                   {day}
-                  {hasSlots && !isSelected && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#634032]"></span>}
+                  {hasSlots && !isSelected && !isPast && (
+                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#634032]"></span>
+                  )}
                 </button>
               );
             })}
@@ -333,7 +356,7 @@ export default function Book({ inlineEditMode = false, externalState = null, set
 
           <button
             onClick={() => setIsIntakeOpen(true)}
-            disabled={!selectedTime}
+            disabled={!selectedTime || isPastDate(getFullDateKey(selectedDate))}
             className="w-full bg-[#634032] text-white py-3.5 font-serif italic text-base tracking-wide hover:bg-[#a38c77] transition-all duration-300 rounded-none shadow-xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             {selectedTime ? "Book Session Now" : "Select an Available Time"}
