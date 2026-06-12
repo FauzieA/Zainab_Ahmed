@@ -7,6 +7,7 @@ import Book from './pages/client/Booking';
 import About from './pages/client/About'; 
 import Contact from './pages/client/Contact';
 import Consultation from './pages/client/Consultation.jsx';
+import Resources from './pages/client/Resources'; // 1. IMPORT THE NEW RESOURCES PAGE
 
 // New Administrative Dashboard View Layouts
 import AdminLogin from './pages/admin/AdminLogin';
@@ -52,8 +53,10 @@ function MasterLayoutSwitcher() {
           {/* Keep /book intact so the buttons on the consultation page can redirect here seamlessly */}
           <Route path="/book" element={<Book />} />
           
-          {/* 2. ADD THE NEW ROUTE MATCHING THE NAVBAR LINK */}
           <Route path="/consultation" element={<Consultation />} />
+          
+          {/* 2. ADD THE NEW RESOURCES ROUTE MATCHING THE NAVBAR */}
+          <Route path="/resources" element={<Resources />} />
           
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />

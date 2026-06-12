@@ -18,8 +18,8 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // UPDATED: Replaced '/book' with '/consultation' to accurately track the new dropdown route
-  const isDropdownActive = ['/about', '/consultation', '/contact'].includes(location.pathname);
+  // UPDATED: Added '/resources' to accurately track the library route structure
+  const isDropdownActive = ['/about', '/consultation', '/resources', '/contact'].includes(location.pathname);
 
   return (
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b 
@@ -98,6 +98,18 @@ export default function Navbar() {
                     }`}
                 >
                   Parenting Consultation
+                </Link>
+
+                {/* ADDED: Resources editorial link route layout option */}
+                <Link 
+                  to="/resources" 
+                  className={`px-4 py-2.5 text-[13px] transition-colors duration-150
+                    ${location.pathname === '/resources' 
+                      ? 'bg-[#efe9e4]/50 text-[#634032] font-medium' 
+                      : 'text-[#bfa791] hover:bg-[#efe9e4]/30 hover:text-[#634032]'
+                    }`}
+                >
+                  Resources & Archive
                 </Link>
 
                 <Link 
