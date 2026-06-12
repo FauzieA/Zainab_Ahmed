@@ -244,8 +244,8 @@ export default function Consultation({ inlineEditMode = false, externalState = n
       </section>
 
      {/* SECTION 3: DEEP EXTENDED BIO */}
-      <section className="bg-[#efe9e4] py-24 px-6 md:px-12 transition-all duration-300">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+      <section className="bg-[#efe9e4] py-12 px-6 md:px-12 transition-all duration-300">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-28 items-start">
           
           {/* Left Column: Stacked Title Left-Aligned Directly Above Managed Image Frame */}
           <div className="md:col-span-4 flex flex-col items-center md:items-start text-center md:text-left">
@@ -281,7 +281,7 @@ export default function Consultation({ inlineEditMode = false, externalState = n
             </h2>
 
             {/* Slightly reduced max-width portrait layout frame to sit even with right content flow height */}
-            <div className="w-full max-w-[300px] aspect-[3/4] bg-[#fff] overflow-hidden border border-[#bfa791]/10 rounded-xs shadow-xs">
+            <div className="w-full max-w-[300px] max-h-[350px] aspect-[3/4] bg-[#fff] overflow-hidden border border-[#bfa791]/10 rounded-xs shadow-xs">
               <img 
                 src={zeeImage} 
                 alt="Zainab Ahmed Portrait Profile" 
@@ -290,13 +290,13 @@ export default function Consultation({ inlineEditMode = false, externalState = n
             </div>
 
             {/* Bold and Italic Consultant Title - Placed Directly Underneath the Image Container */}
-            <p className="text-[14px] md:text-[15px] tracking-widest text-[#bfa791] font-sans mt-5 italic font-bold w-full text-center md:text-left">
+            <p className="text-[12px] md:text-[15px]  text-[#bfa791] font-sans mt-5 italic font-bold w-full text-center md:text-left">
               Parenting & Child Development Consultant
             </p>
           </div>
 
           {/* Right Column: Expanded Width Text Layout Block */}
-          <div className="md:col-span-8 flex flex-col items-center md:items-start text-left md:pt-28">
+          <div className="md:col-span-7 flex flex-col items-center md:items-start text-left md:pt-36">
             
             {/* Body Paragraphs - Swapped to global text-justify alignment */}
             <div 
@@ -356,12 +356,18 @@ export default function Consultation({ inlineEditMode = false, externalState = n
         </div>
       </section>
 
-
-      {/* SECTION 4: THE STEP-BY-STEP PROCESS */}
-      <section className="bg-white py-24 px-6 md:px-12 text-center">
+{/* SECTION 4: THE STEP-BY-STEP PROCESS */}
+      <section className="bg-white py-24 px-6 md:px-12 text-center transition-all duration-300">
         <div className="max-w-5xl mx-auto">
           
-          <h2 className="text-[30px] md:text-[36px] tracking-[0.2em] uppercase text-[#bfa791] font-normal mb-16">
+          {/* Main Section Header */}
+          <h2 
+            style={{ 
+              fontFamily: "'Times New Roman', times, serif",
+              color: 'rgb(191, 167, 145)'
+            }}
+            className="text-[36px] md:text-[44px] tracking-[0.15em] uppercase font-normal mb-20"
+          >
             <span
               contentEditable={inlineEditMode}
               suppressContentEditableWarning={inlineEditMode}
@@ -372,12 +378,18 @@ export default function Consultation({ inlineEditMode = false, externalState = n
             </span>
           </h2>
 
-          {/* Balanced 2x2 Clean Minimal Matrix Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12 text-left items-start">
+          {/* Clean Minimal Matrix Grid Layout matching Screenshot 2026-06-12 at 9.25.52 AM.jpg */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-20 text-center items-start relative">
             
+            {/* Vertical Center Divider for Desktop Layouts */}
+            <div className="hidden md:block absolute left-1/2 top-4 bottom-4 w-[1px] bg-[#efe9e4] transform -translate-x-1/2" />
+
             {/* Step 1 */}
-            <div className="space-y-2 border-l-2 border-[#efe9e4] pl-6">
-              <h3 className="text-[19px] md:text-[21px] font-normal text-[#bfa791]">
+            <div className="flex flex-col items-center space-y-4 px-4">
+              <h3 
+                style={{ fontFamily: "'Times New Roman', times, serif", color: 'rgb(191, 167, 145)' }}
+                className="text-[22px] md:text-[24px] font-normal tracking-wide"
+              >
                 <span
                   contentEditable={inlineEditMode}
                   suppressContentEditableWarning={inlineEditMode}
@@ -388,9 +400,14 @@ export default function Consultation({ inlineEditMode = false, externalState = n
                 </span>
               </h3>
               <p 
+                style={{ 
+                  fontFamily: "'Times New Roman', times, serif", 
+                  color: 'rgb(191, 167, 145)',
+                  lineHeight: '26px'
+                }}
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
-                className={`text-[15px] md:text-[16px] text-[#bfa791]/90 font-serif leading-relaxed ${inlineEditMode ? 'bg-yellow-50 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}`}
+                className={`text-[15px] md:text-[16px] text-center max-w-sm ${inlineEditMode ? 'bg-yellow-50 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}`}
                 onBlur={(e) => handleEditableBlur('consultProc1Desc', e.currentTarget.innerText)}
               >
                 {getConsultValue('consultProc1Desc', 'Choose a time that works for you and share a little about what’s been feeling difficult in your parenting journey.')}
@@ -398,8 +415,11 @@ export default function Consultation({ inlineEditMode = false, externalState = n
             </div>
 
             {/* Step 2 */}
-            <div className="space-y-2 border-l-2 border-[#efe9e4] pl-6">
-              <h3 className="text-[19px] md:text-[21px] font-normal text-[#bfa791]">
+            <div className="flex flex-col items-center space-y-4 px-4">
+              <h3 
+                style={{ fontFamily: "'Times New Roman', times, serif", color: 'rgb(191, 167, 145)' }}
+                className="text-[22px] md:text-[24px] font-normal tracking-wide"
+              >
                 <span
                   contentEditable={inlineEditMode}
                   suppressContentEditableWarning={inlineEditMode}
@@ -410,9 +430,14 @@ export default function Consultation({ inlineEditMode = false, externalState = n
                 </span>
               </h3>
               <p 
+                style={{ 
+                  fontFamily: "'Times New Roman', times, serif", 
+                  color: 'rgb(191, 167, 145)',
+                  lineHeight: '26px'
+                }}
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
-                className={`text-[15px] md:text-[16px] text-[#bfa791]/90 font-serif leading-relaxed ${inlineEditMode ? 'bg-yellow-50 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}`}
+                className={`text-[15px] md:text-[16px] text-center max-w-sm ${inlineEditMode ? 'bg-yellow-50 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}`}
                 onBlur={(e) => handleEditableBlur('consultProc2Desc', e.currentTarget.innerText)}
               >
                 {getConsultValue('consultProc2Desc', 'During our session, we’ll explore your child’s behavior, your current challenges, daily patterns, triggers, routines, and emotional dynamics—without judgment or pressure.')}
@@ -420,8 +445,11 @@ export default function Consultation({ inlineEditMode = false, externalState = n
             </div>
 
             {/* Step 3 */}
-            <div className="space-y-2 border-l-2 border-[#efe9e4] pl-6">
-              <h3 className="text-[19px] md:text-[21px] font-normal text-[#bfa791]">
+            <div className="flex flex-col items-center space-y-4 px-4">
+              <h3 
+                style={{ fontFamily: "'Times New Roman', times, serif", color: 'rgb(191, 167, 145)' }}
+                className="text-[22px] md:text-[24px] font-normal tracking-wide max-w-xs leading-tight"
+              >
                 <span
                   contentEditable={inlineEditMode}
                   suppressContentEditableWarning={inlineEditMode}
@@ -432,9 +460,14 @@ export default function Consultation({ inlineEditMode = false, externalState = n
                 </span>
               </h3>
               <p 
+                style={{ 
+                  fontFamily: "'Times New Roman', times, serif", 
+                  color: 'rgb(191, 167, 145)',
+                  lineHeight: '26px'
+                }}
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
-                className={`text-[15px] md:text-[16px] text-[#bfa791]/90 font-serif leading-relaxed ${inlineEditMode ? 'bg-yellow-50 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}`}
+                className={`text-[15px] md:text-[16px] text-center max-w-sm ${inlineEditMode ? 'bg-yellow-50 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}`}
                 onBlur={(e) => handleEditableBlur('consultProc3Desc', e.currentTarget.innerText)}
               >
                 {getConsultValue('consultProc3Desc', 'Together, we’ll uncover what may be happening beneath the behavior so you can respond with more clarity, confidence, and calm. You’ll leave with realistic strategies and tools tailored to your child, your parenting style, and your everyday life')}
@@ -442,8 +475,11 @@ export default function Consultation({ inlineEditMode = false, externalState = n
             </div>
 
             {/* Step 4 */}
-            <div className="space-y-2 border-l-2 border-[#efe9e4] pl-6">
-              <h3 className="text-[19px] md:text-[21px] font-normal text-[#bfa791]">
+            <div className="flex flex-col items-center space-y-4 px-4">
+              <h3 
+                style={{ fontFamily: "'Times New Roman', times, serif", color: 'rgb(191, 167, 145)' }}
+                className="text-[22px] md:text-[24px] font-normal tracking-wide"
+              >
                 <span
                   contentEditable={inlineEditMode}
                   suppressContentEditableWarning={inlineEditMode}
@@ -454,9 +490,14 @@ export default function Consultation({ inlineEditMode = false, externalState = n
                 </span>
               </h3>
               <p 
+                style={{ 
+                  fontFamily: "'Times New Roman', times, serif", 
+                  color: 'rgb(191, 167, 145)',
+                  lineHeight: '26px'
+                }}
                 contentEditable={inlineEditMode}
                 suppressContentEditableWarning={inlineEditMode}
-                className={`text-[15px] md:text-[16px] text-[#bfa791]/90 font-serif leading-relaxed ${inlineEditMode ? 'bg-yellow-50 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}`}
+                className={`text-[15px] md:text-[16px] text-center max-w-sm ${inlineEditMode ? 'bg-yellow-50 ring-1 ring-dashed ring-[#bfa791] px-1' : ''}`}
                 onBlur={(e) => handleEditableBlur('consultProc4Desc', e.currentTarget.innerText)}
               >
                 {getConsultValue('consultProc4Desc', 'Parenting support doesn’t end after one conversation. Follow-up sessions help us check progress, adjust strategies where needed, answer new concerns, and continue supporting you as your child grows and changes.')}
@@ -465,11 +506,12 @@ export default function Consultation({ inlineEditMode = false, externalState = n
 
           </div>
 
-          {/* Final Call to Action Link */}
-          <div className="mt-20 pt-4">
+          {/* Call to Action Button */}
+          <div className="mt-24">
             <Link 
               to="/book"
-              className="px-10 py-4 bg-[#bfa791] text-white font-sans text-[13px] uppercase tracking-[0.2em] rounded-xs shadow-xs hover:bg-[#a38c77] transition-colors duration-300 inline-block"
+              style={{ fontFamily: "'Times New Roman', times, serif" }}
+              className="px-12 py-3 bg-[#bca693] text-white text-[16px] tracking-wide rounded-none hover:bg-[#a99380] transition-colors duration-300 inline-block"
             >
               Book Session
             </Link>
