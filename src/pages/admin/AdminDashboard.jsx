@@ -12,7 +12,6 @@ import Home from '../client/Home';
 import Book from '../client/Booking';
 import Resources from '../client/Resources'; 
 
-// HELPER UTIL: Dynamically captures the active current day in the local DD/MM/YYYY format
 const getTodayString = () => {
   const today = new Date();
   const dd = String(today.getDate()).padStart(2, '0');
@@ -27,26 +26,19 @@ export default function AdminDashboard() {
   const userLabel = localStorage.getItem('admin_username') || 'Admin';
 
   const [activeSubPage, setActiveSubPage] = useState('calendar');
-
   const [slots, setSlots] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [toast, setToast] = useState(null);
-
   const [viewMode, setViewMode] = useState('month'); 
-  
-  // Defaults calendar to current local time, and starts with no dates highlighted or pre-selected
   const [focusedDate, setFocusedDate] = useState(getTodayString()); 
   const [selectedDatesPool, setSelectedDatesPool] = useState([]); 
-  
   const [expandedWeekDay, setExpandedWeekDay] = useState(null); 
   const [rescheduleTargetBooking, setRescheduleTargetBooking] = useState(null);
 
   const CURRENT_YEAR = new Date().getFullYear();
-  const TIME_OPTIONS = [
-    '09:00 AM', '10:15 AM', '11:30 AM', '01:00 PM', '02:15 PM', '03:30 PM', '04:45 PM'
-  ];
+  const TIME_OPTIONS = ['09:00 AM', '10:15 AM', '11:30 AM', '01:00 PM', '02:15 PM', '03:30 PM', '04:45 PM'];
 
   const MONTHS_MANIFEST = [
     { name: 'January', code: '01', days: 31 }, { name: 'February', code: '02', days: 28 },
@@ -60,7 +52,7 @@ export default function AdminDashboard() {
   const [sessionPrice, setSessionPrice] = useState('25000');
   const [siteContent, setSiteContent] = useState({});
 
-  // Local state layout rules to buffer new item inject records smoothly
+  // Form initialization
   const [newBook, setNewBook] = useState({ title: '', subtitle: '', downloadUrl: '', coverImage: '' });
 
   useEffect(() => {
@@ -77,7 +69,6 @@ export default function AdminDashboard() {
     setTimeout(() => setToast(null), 4000);
   };
 
-  // Cleaned up trailing slashes and removed redundant '/api/booking' paths across all fetches
   const syncWorkspaceData = async () => {
     try {
       setLoading(true);
@@ -85,6 +76,12 @@ export default function AdminDashboard() {
       const res = await fetch(`${baseUrl}/admin-dashboard-data/`, {
         headers: { 'Authorization': `Token ${token}` }
       });
+      if (res.status === 401) {
+        showToast('Session expired. Please log in again.', 'error');
+        localStorage.clear();
+        navigate('/admin/login');
+        return;
+      }
       if(res.ok) {
          const data = await res.json();
          setSlots(data.slots || []);
@@ -121,6 +118,10 @@ export default function AdminDashboard() {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${token}` },
         body: JSON.stringify({ price: sessionPrice })
       });
+      if (res.status === 401) {
+        showToast('Your session has expired. Copy your changes and log in again.', 'error');
+        return;
+      }
       if (res.ok) {
         showToast('Pricing adjustments successfully updated.');
         fetchSystemConfigurations();
@@ -144,6 +145,10 @@ export default function AdminDashboard() {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${token}` },
         body: JSON.stringify({ site_content: siteContent })
       });
+      if (res.status === 401) {
+        showToast('Error 401: Unauthorized. Please log back in to save updates.', 'error');
+        return;
+      }
       if (res.ok) {
         showToast('Website content state successfully saved.');
         fetchSystemConfigurations(); 
@@ -157,28 +162,48 @@ export default function AdminDashboard() {
     }
   };
 
-  // Appends fresh resource data directly into siteContent arrays dynamically
+  // Automated asset direct link resolution helper
+  const cleanImageLink = (url) => {
+    if (!url) return '';
+    let clean = url.trim();
+    // Transforms structural standard landing pages into raw file streams
+    if (clean.includes('postimg.cc/')) {
+      clean = clean.replace('postimg.cc/', 'i.postimg.cc/') + '.png';
+      clean = clean.replace(/\.cc\/([a-zA-Z0-9]+)$/, '.cc/$1'); 
+    }
+    if (clean.includes('ibb.co/') && !clean.includes('i.ibb.co')) {
+      showToast('Tip: Use direct link option for ImgBB sources.', 'error');
+    }
+    return clean;
+  };
+
   const handleAddBook = (e) => {
     e.preventDefault();
-    if (!newBook.title || !newBook.downloadUrl) {
-      showToast('Title and download link details are required.', 'error');
+    // Combined system check verification boundary
+    if (!newBook.title.trim() || !newBook.subtitle.trim() || !newBook.downloadUrl.trim() || !newBook.coverImage.trim()) {
+      showToast('All fields (including the Cover Image) are mandatory.', 'error');
       return;
     }
+
+    const clearCoverUrl = cleanImageLink(newBook.coverImage);
     const currentBooks = siteContent.libraryBooks || [];
-    const updatedBooks = [...currentBooks, { ...newBook, id: `book_${Date.now()}` }];
+    const updatedBooks = [...currentBooks, { 
+      ...newBook, 
+      coverImage: clearCoverUrl,
+      id: `book_${Date.now()}` 
+    }];
     
     setSiteContent({ ...siteContent, libraryBooks: updatedBooks });
     setNewBook({ title: '', subtitle: '', downloadUrl: '', coverImage: '' });
-    showToast('Book added. Click "Commit Library Updates" below to save permanently.', 'success');
+    showToast('Book staged. Remember to click "Commit Library Updates" above to save permanently.', 'success');
   };
 
-  // Drops targets smoothly out of serialized list rows safely
   const handleDeleteBook = (bookId) => {
     if (window.confirm("Are you sure you want to completely remove this book from the public library?")) {
       const currentBooks = siteContent.libraryBooks || [];
       const updatedBooks = currentBooks.filter(b => b.id !== bookId);
       setSiteContent({ ...siteContent, libraryBooks: updatedBooks });
-      showToast('Book dropped. Click "Commit Library Updates" below to save permanently.', 'success');
+      showToast('Book removed. Click "Commit Library Updates" to save permanently.', 'success');
     }
   };
 
@@ -241,7 +266,10 @@ export default function AdminDashboard() {
           time_strings: timesArray   
         })
       });
-
+      if (response.status === 401) {
+        showToast('Unauthorized operation session context.', 'error');
+        return;
+      }
       if (response.ok) {
         showToast("✓ Time slots added!", "success");
         if (onSuccess) onSuccess(); 
@@ -332,6 +360,9 @@ export default function AdminDashboard() {
       setActionLoading(false);
     }
   };
+
+  // Button disabled rule condition flag parameter check evaluation
+  const isFormInvalid = !newBook.title.trim() || !newBook.subtitle.trim() || !newBook.downloadUrl.trim() || !newBook.coverImage.trim();
 
   return (
     <div className="min-h-screen bg-[#efe9e4]/20 flex flex-col antialiased font-sans text-gray-800 selection:bg-[#efe9e4]">
@@ -430,7 +461,7 @@ export default function AdminDashboard() {
             <div className="max-w-md bg-white border border-[#bfa791]/20 p-6 rounded-xs shadow-2xs space-y-4">
               <div>
                 <h3 className="font-serif text-md text-[#634032] uppercase tracking-wide">Session Price</h3>
-                <p className="text-[11px] text-[#a38c77]">Set the default flat currency value charged for private client consultations.</p>
+                <p className="text-[11px] text-[#a38c77]">Set the default flat currency value charged for consultations.</p>
               </div>
               <form onSubmit={handleSavePricing} className="space-y-4">
                 <div className="space-y-1.5">
@@ -468,18 +499,10 @@ export default function AdminDashboard() {
               <div className="border border-[#bfa791]/20 rounded-sm bg-white overflow-hidden shadow-2xs p-4 max-h-[calc(100vh-300px)] overflow-y-auto">
                 <div className="space-y-8 pointer-events-auto">
                   <div>
-                    <Home 
-                      inlineEditMode={true}
-                      externalState={siteContent}
-                      setExternalState={setSiteContent}
-                    />
+                    <Home inlineEditMode={true} externalState={siteContent} setExternalState={setSiteContent} />
                   </div>
                   <div className="pt-8 border-t border-gray-200">
-                    <Book 
-                      inlineEditMode={true}
-                      externalState={siteContent}
-                      setExternalState={setSiteContent}
-                    />
+                    <Book inlineEditMode={true} externalState={siteContent} setExternalState={setSiteContent} />
                   </div>
                 </div>
               </div>
@@ -538,17 +561,17 @@ export default function AdminDashboard() {
                         <input 
                           type="text" required value={newBook.title}
                           onChange={e => setNewBook({...newBook, title: e.target.value.toUpperCase()})}
-                          className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none rounded-none text-xs focus:border-[#634032]"
+                          className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none text-xs focus:border-[#634032]"
                           placeholder="THE PEACEFUL BLUEPRINT"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[9px] font-bold tracking-wider uppercase mb-1">Subtitle / Short Blurb</label>
+                        <label className="block text-[9px] font-bold tracking-wider uppercase mb-1">Subtitle / Short Blurb *</label>
                         <textarea 
-                          rows="2" value={newBook.subtitle}
+                          rows="2" required value={newBook.subtitle}
                           onChange={e => setNewBook({...newBook, subtitle: e.target.value})}
-                          className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none rounded-none text-xs resize-none focus:border-[#634032]"
+                          className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none text-xs resize-none focus:border-[#634032]"
                           placeholder="Navigating early childhood tantrums safely..."
                         />
                       </div>
@@ -558,25 +581,26 @@ export default function AdminDashboard() {
                         <input 
                           type="text" required value={newBook.downloadUrl}
                           onChange={e => setNewBook({...newBook, downloadUrl: e.target.value})}
-                          className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none rounded-none text-xs font-mono text-[11px] focus:border-[#634032]"
+                          className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none text-xs font-mono text-[11px] focus:border-[#634032]"
                           placeholder="https://your-storage.com/files/book.pdf"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[9px] font-bold tracking-wider uppercase mb-1">Cover Image Link</label>
+                        <label className="block text-[9px] font-bold tracking-wider uppercase mb-1">Cover Image Link *</label>
                         <input 
-                          type="text" value={newBook.coverImage}
+                          type="text" required value={newBook.coverImage}
                           onChange={e => setNewBook({...newBook, coverImage: e.target.value})}
-                          className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none rounded-none text-xs font-mono text-[11px] focus:border-[#634032]"
-                          placeholder="https://images.unsplash.com/photo-..."
+                          className="w-full bg-gray-50/50 border border-gray-200 p-2 outline-none text-xs font-mono text-[11px] focus:border-[#634032]"
+                          placeholder="https://postimg.cc/GBvfN2qk"
                         />
                       </div>
                     </div>
 
                     <button 
                       type="submit" 
-                      className="w-full bg-[#634032] text-white py-2 text-[10px] uppercase font-mono tracking-widest hover:bg-[#a38c77] transition-all duration-300 rounded-none cursor-pointer"
+                      disabled={isFormInvalid}
+                      className="w-full bg-[#634032] text-white py-2 text-[10px] uppercase font-mono tracking-widest hover:bg-[#a38c77] transition-all duration-300 rounded-none disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                       + Stage Book Object
                     </button>
