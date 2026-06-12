@@ -39,13 +39,13 @@ export default function Navbar() {
   const isDropdownActive = ['/about', '/consultation', '/resources', '/contact'].includes(location.pathname);
 
   return (
-    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b 
+    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b pb-6 md:pb-0
       ${isScrolled || isMobileMenuOpen
         ? 'bg-white/90 backdrop-blur-md border-[#bfa791]/15 py-4 shadow-2xs' 
         : 'bg-white/0 border-transparent py-6'
       }`}
     >
-      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-between gap-y-2">
         
         {/* Brand/Logo Area */}
         <Link 

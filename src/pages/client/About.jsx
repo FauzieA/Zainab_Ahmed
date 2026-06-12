@@ -70,7 +70,7 @@ export default function About({ inlineEditMode = false, externalState = null, se
   };
 
   return (
-    <div className="min-h-screen font-serif antialiased selection:bg-[#bfa791]/10 selection:text-[#bfa791] overflow-x-hidden">
+    <div className="min-h-screen font-serif antialiased selection:bg-[#bfa791]/10  selection:text-[#bfa791] overflow-x-hidden">
       
       {/* SECTION 1: BIO & MAIN PROFILE */}
       <section 
